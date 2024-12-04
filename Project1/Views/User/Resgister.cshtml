@@ -1,0 +1,87 @@
+﻿@model Project1.ViewModels.RegisterUserViewModel
+
+@{
+    ViewData["Title"] = "Register";
+    Layout = "~/Views/Shared/_LayoutLogin.cshtml";
+}
+
+<div class="page-wrapper" id="main-wrapper" data-layout="vertical" data-navbarbg="skin6" data-sidebartype="full"
+     data-sidebar-position="fixed" data-header-position="fixed">
+    <div class="position-relative overflow-hidden radial-gradient min-vh-100 d-flex align-items-center justify-content-center">
+        <div class="d-flex align-items-center justify-content-center w-100">
+            <div class="row justify-content-center w-100">
+                <div class="col-md-8 col-lg-7 col-xxl-7">
+                    <div class="card mb-0">
+                        <div class="card-body" style="padding: 10px">
+                            <a asp-controller="Welcome" asp-action="WelcomePage" class="text-nowrap logo-img text-center d-block py-3 w-100" style="padding: 0px!important">
+                                <img src="../1LayoutLogin/assets/images/logos/dark-logo.svg" width="180" alt="" style="border-radius: 50%">
+                                <p class="text-center" style="color: #f8742c; font-size: 145%; font-weight: bold; margin: 0.5%">ĐĂNG KÝ TÀI KHOẢN</p>
+                            </a>
+                            <form asp-action="Resgister">
+                                <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                                <!-- Row cho họ và tên -->
+                                <div class="row">
+                                    <div class="col-md-6 mb-3">
+                                        <label asp-for="LastName" class="form-label">Họ</label>
+                                        <input asp-for="LastName" class="form-control" />
+                                        <span asp-validation-for="LastName" class="text-danger"></span>
+                                    </div>
+                                    <div class="col-md-6 mb-3">
+                                        <label asp-for="FirstName" class="form-label">Tên</label>
+                                        <input asp-for="FirstName" class="form-control" />
+                                        <span asp-validation-for="FirstName" class="text-danger"></span>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-6 mb-3">
+                                        <label asp-for="PhoneNumber" class="form-label">Số điện thoại</label>
+                                        <input asp-for="PhoneNumber" class="form-control" />
+                                        <span asp-validation-for="PhoneNumber" class="text-danger"></span>
+                                    </div>
+                                    <div class="col-md-6 mb-3">
+                                        <label asp-for="Email" class="form-label">Email</label>
+                                        <input asp-for="Email" class="form-control" />
+                                        <span asp-validation-for="Email" class="text-danger"></span>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-6 mb-3">
+                                        <label asp-for="Nickname" class="form-label">Nickname</label>
+                                        <input asp-for="Nickname" class="form-control" />
+                                        <span asp-validation-for="Nickname" class="text-danger"></span>
+                                    </div>
+                                    <div class="col-md-6 mb-3">
+                                        <label asp-for="Address" class="form-label">Địa chỉ</label>
+                                        <input asp-for="Address" class="form-control" />
+                                        <span asp-validation-for="Address" class="text-danger"></span>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-6 mb-3">
+                                        <label asp-for="Password" class="form-label">Mật khẩu</label>
+                                        <input asp-for="Password" class="form-control" />
+                                        <span asp-validation-for="Password" class="text-danger"></span>
+                                    </div>
+                                    <div class="col-md-6 mb-3">
+                                        <label asp-for="ConfirmPassword" class="form-label">Xác nhận mật khẩu</label>
+                                        <input asp-for="ConfirmPassword" class="form-control" />
+                                        <span asp-validation-for="ConfirmPassword" class="text-danger"></span>
+                                    </div>
+                                </div>
+                                <!-- Nút Đăng ký -->
+                                <a style="background-color: #f8742c; border-color: #f8742c; margin-bottom: 0.5%!important" class="btn btn-primary w-100 py-8 fs-4 mb-4 rounded-2">
+                                    <button class="btn-lg" type="submit" style="background-color: #f8742c; border: none; outline: none; color: white">Đăng ký</button>
+                                </a>
+
+                                <!-- Liên kết quay lại -->
+                                <div class="d-flex align-items-center justify-content-center">
+                                    <a asp-controller="Login" asp-action="Index" class="text-primary fw-bold" style="color: black!important">Quay lại</a>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

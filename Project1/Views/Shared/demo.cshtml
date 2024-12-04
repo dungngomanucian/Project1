@@ -1,0 +1,66 @@
+﻿<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ô nhập địa chỉ với Mapbox</title>
+    <link href='https://api.mapbox.com/mapbox-gl-js/v2.6.1/mapbox-gl.css' rel='stylesheet' />
+    <style>
+        #suggestions {
+          border: 1px solid #ccc;
+          max-height: 200px;
+          overflow-y: auto;
+        }
+        .suggestion-item {
+          padding: 8px;
+          cursor: pointer;
+        }
+        .suggestion-item:hover {
+          background-color: #f0f0f0;
+        }
+    </style>
+</head>
+<body>
+    @RenderBody()
+    <div>
+        <input type="text" id="address-input" placeholder="Nhập địa chỉ..." />
+        <div id="suggestions"></div>
+    </div>
+
+    <script src='https://api.mapbox.com/mapbox-gl-js/v2.6.1/mapbox-gl.js'></script>
+    <script>
+        const accessToken = 'pk.eyJ1Ijoic292aWV0cGxnNjEyIiwiYSI6ImNsdWFqYzR4ejBsM2Uyc2xkaHYzYzVsOXMifQ.tDjyjf6lgxEemlMnyHy_XA';
+
+        document.getElementById('address-input').addEventListener('input', async (event) => {
+          const query = event.target.value;
+          const suggestions = document.getElementById('suggestions');
+
+          // Nếu ô nhập địa chỉ trống, xóa danh sách gợi ý và dừng hàm
+          if (query.length === 0) {
+            suggestions.innerHTML = '';
+            return;
+          }
+
+          if (query.length < 3) return;  // Chỉ tìm khi người dùng nhập ít nhất 3 ký tự
+
+          const response = await fetch(`https://api.mapbox.com/geocoding/v5/mapbox.places/${query}.json?access_token=${accessToken}&country=VN&types=address,poi`);
+          const data = await response.json();
+
+          suggestions.innerHTML = '';  // Xóa các gợi ý cũ trước khi thêm gợi ý mới
+
+          data.features.forEach((feature) => {
+            const item = document.createElement('div');
+            item.textContent = feature.place_name;
+            item.className = 'suggestion-item';
+            item.onclick = () => {
+              document.getElementById('address-input').value = feature.place_name;
+              suggestions.innerHTML = '';  // Ẩn danh sách khi chọn một gợi ý
+            };
+            suggestions.appendChild(item);
+          });
+        });
+
+    </script>
+
+</body>
+</html>

@@ -1,0 +1,26 @@
+﻿.discount-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px;
+    margin-bottom: 10px;
+    border-radius: 10px;
+    background-color: #ffefe6;
+}
+
+.discount-item strong {
+    font-size: 1rem;
+    color: #ff5a5a;
+}
+
+.apply-discount {
+    font-size: 0.9rem;
+    color: #ff5a5a;
+    font-weight: bold;
+    cursor: pointer;
+    text-decoration: none;
+}
+
+.apply-discount:hover {
+    text-decoration: underline;
+}

@@ -1,0 +1,234 @@
+﻿<!DOCTYPE html>
+<html lang="en-US" dir="ltr">
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+
+    <!-- ===============================================-->
+    <!--    Document Title-->
+    <!-- ===============================================-->
+    <title>Sixter's Pizza</title>
+
+
+    <!-- ===============================================-->
+    <!--    Favicons-->
+    <!-- ===============================================-->
+    <link rel="apple-touch-icon" sizes="180x180" href="../1LayoutIndex/assets/img/favicons/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="../1LayoutIndex/assets/img/favicons/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="../1LayoutIndex/assets/img/favicons/favicon-16x16.png">
+    <link rel="shortcut icon" type="image/x-icon" href="../1LayoutIndex/assets/img/favicons/favicon.ico">
+    <link rel="manifest" href="../1LayoutIndex/assets/img/favicons/manifest.json">
+    <meta name="msapplication-TileImage" content="../1LayoutIndex/assets/img/favicons/mstile-150x150.png">
+    <meta name="theme-color" content="#ffffff">
+
+
+    <!-- ===============================================-->
+    <!--    Stylesheets-->
+    <!-- ===============================================-->
+    <link href="../1LayoutIndex/assets/css/theme.css" rel="stylesheet" />
+
+    <style>
+        #selected-address {
+            display: inline-block; /* Đảm bảo thẻ hoạt động như một khối inline */
+            max-width: 150px; /* Đặt kích thước tối đa phù hợp (tuỳ chỉnh theo nhu cầu) */
+            white-space: nowrap; /* Ngăn xuống dòng */
+            overflow: hidden; /* Ẩn nội dung vượt quá kích thước */
+            text-overflow: ellipsis; /* Thêm dấu '...' vào cuối nội dung bị cắt */
+            vertical-align: middle; /* Giữ văn bản thẳng hàng với biểu tượng */
+        }
+
+        p.mb-0 {
+            display: flex; /* Sử dụng Flexbox để điều chỉnh layout */
+            align-items: center; /* Căn giữa các phần tử theo chiều dọc */
+            flex-wrap: nowrap; /* Không cho phép xuống dòng */
+        }
+
+        .fas.fa-map-marker-alt {
+            margin-right: 8px; /* Thêm khoảng cách giữa icon và nội dung */
+        }
+
+        #suggestionsHeader {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            width: 100%;
+            background-color: #fff;
+            max-height: 200px;
+            overflow-y: auto;
+            z-index: 1000;
+            border-radius: 0 0 4px 4px;
+        }
+
+        .suggestionHeader-item {
+            padding: 8px;
+            cursor: pointer;
+        }
+
+        .suggestionHeader-item:hover {
+            background-color: #f0f0f0;
+        }
+
+        .input-group-icon {
+            position: relative;
+            display: flex;
+            align-items: center;
+        }
+
+        .input-box-icon {
+            position: absolute;
+            left: 10px;
+            pointer-events: none;
+        }
+
+        #inputPickup {
+            padding-left: 30px; /* Để icon không đè lên text trong input */
+        }
+
+        .btn-shopping-cart {
+            white-space: nowrap; /* Đảm bảo nội dung không bị ngắt dòng */
+            display: flex;
+            align-items: center;
+        }
+    </style>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script>
+        $(document).ready(function () {
+            $('#userDropdown').on('click', function () {
+                let dropdownMenu = $(this).next('.dropdown-menu');
+                dropdownMenu.toggleClass('show');
+            });
+        });
+    </script>
+</head>
+
+
+<body>
+    <!-- ===============================================-->
+    <!--    Main Content-->
+    <!-- ===============================================-->
+    <main class="main" id="top">
+        <nav class="navbar navbar-expand-lg navbar-light bg-light fixed-top" data-navbar-on-scroll="data-navbar-on-scroll">
+            <div class="container">
+                <a class="navbar-brand d-inline-flex" asp-controller="Welcome" asp-action="WelcomePage"><img class="d-inline-block" src="../1LayoutIndex/assets/img/favicons/favicon.ico" alt="logo" /><span class="text-1000 fs-3 fw-bold ms-2 text-gradient">Sixter’s Pizza</span></a>
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation"><span class="navbar-toggler-icon"> </span></button>
+                <div class="collapse navbar-collapse border-top border-lg-0 my-2 mt-lg-0" id="navbarSupportedContent">
+                    <div class="mx-auto pt-5 pt-lg-0 d-block d-lg-none d-xl-block">
+                        <p class="mb-0 fw-bold text-lg-center">
+                            Giao đến:
+                            <i class="fas fa-map-marker-alt text-warning mx-2"></i>
+                            <span class="fw-normal" id="selected-address" title="@ViewBag.SelectedAddress"
+                                  data-address="@ViewBag.SelectedAddress">@ViewBag.SelectedAddress</span>
+                        </p>
+                    </div>
+                    <form class="d-flex mt-4 mt-lg-0 ms-lg-auto ms-xl-0">
+                        <div class="input-group-icon pe-2">
+                            <i class="fas fa-search input-box-icon text-primary"></i>
+                            <input class="form-control border-0 input-box bg-100" id="inputDeliveryHeader" type="text" placeholder="Chọn địa chỉ" aria-label="Search" />
+                            <div id="suggestionsHeader"></div>
+                        </div>
+                        <div class="dropdown">
+                            <button class="btn btn-white shadow-warning text-warning dropdown-toggle"
+                                    type="button"
+                                    id="userDropdown"
+                                    data-bs-toggle="dropdown"
+                                    aria-expanded="false">
+                                <i class="fas fa-user me-2"></i>
+                            </button>
+                            @await Html.PartialAsync("_PartialUserStatus")
+                        </div>
+                        <div class="d-flex align-items-center justify-content-end">
+                            <a asp-controller="Cart" asp-action="Index"
+                               class="btn btn-white shadow-warning text-warning btn-shopping-cart d-flex align-items-center"
+                               type="submit">
+                                <i class="fas fa-shopping-cart me-2"></i><span>0</span>
+                            </a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </nav>
+    </main>
+    <!-- ===============================================-->
+    <!--    End of Main Content-->
+    <!-- ===============================================-->
+    <!-- ===============================================-->
+    <!--    JavaScripts-->
+    <!-- ===============================================-->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+    <script src="../1LayoutIndex/vendors/@@popperjs/popper.min.js"></script>
+    <script src="../1LayoutIndex/vendors/bootstrap/bootstrap.min.js"></script>
+    <script src="../1LayoutIndex/vendors/is/is.min.js"></script>
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=window.scroll"></script>
+    <script src="../1LayoutIndex/vendors/fontawesome/all.min.js"></script>
+    <script src="../1LayoutIndex/assets/js/theme.js"></script>
+
+    <script src='https://api.mapbox.com/mapbox-gl-js/v2.6.1/mapbox-gl.js'></script>
+
+
+    <link href="https://fonts.googleapis.com/css2?family=Source+Sans+Pro:wght@200;300;400;600;700;900&amp;display=swap" rel="stylesheet">
+
+    <script>
+        const accessToken = 'pk.eyJ1Ijoic292aWV0cGxnNjEyIiwiYSI6ImNsdWFqYzR4ejBsM2Uyc2xkaHYzYzVsOXMifQ.tDjyjf6lgxEemlMnyHy_XA';
+        document.getElementById('inputDeliveryHeader').addEventListener('input', async (event) => {
+
+            const query = event.target.value;
+            const suggestions = document.getElementById('suggestionsHeader');
+
+            if (query.length === 0) {
+                suggestions.innerHTML = '';
+                return;
+            }
+
+            if (query.length < 3) return;
+
+            const response = await fetch(`https://api.mapbox.com/geocoding/v5/mapbox.places/${query}.json?access_token=${accessToken}&country=VN&types=address,poi`);
+            const data = await response.json();
+
+            suggestions.innerHTML = '';
+
+            data.features.forEach((feature) => {
+                const item = document.createElement('div');
+                item.textContent = feature.place_name;
+                item.className = 'suggestionHeader-item';
+                item.onclick = async () => {
+                    document.getElementById('inputDeliveryHeader').value = feature.place_name;
+                    document.getElementById('selected-address').textContent = feature.place_name;
+                    suggestions.innerHTML = '';
+
+                    // Gửi địa chỉ được chọn đến server qua AJAX để lưu vào Session
+                    await fetch('/Welcome/SaveSelectedAddress', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({ address: feature.place_name })
+                    });
+
+                    // Tải lại trang sau khi lưu địa chỉ
+                    location.reload();
+                };
+                suggestions.appendChild(item);
+            });
+        });
+
+        //Hiển thị số lượng trong Cart
+        document.addEventListener("DOMContentLoaded", function () {
+            updateCartQuantity();
+        });
+
+        function updateCartQuantity() {
+            fetch('/api/CartAPI/GetCartQuantity')
+                .then(response => response.json())
+                .then(data => {
+                    console.log('cart quantity: ' + data.quantity);
+                    $('.btn-shopping-cart span').text(data.quantity);
+                })
+                .catch(error => console.error('Error: ', error));
+        }
+    </script>
+</body>
+
+</html>

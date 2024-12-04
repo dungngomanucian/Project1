@@ -1,0 +1,45 @@
+﻿.quantity-container {
+    display: flex;
+    align-items: center;
+    border: 1px solid #ddd;
+    border-radius: 20px;
+    padding: 5px;
+    width: fit-content;
+    margin: 0 auto;
+}
+
+.quantity-btn {
+    width: 30px;
+    height: 30px;
+    border: none;
+    border-radius: 60px;
+    font-size: 16px;
+    font-weight: bold;
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+}
+
+.decrease {
+    background-color: #F17228;
+    margin-right: 5px;
+}
+
+.increase {
+    background-color: #F17228;
+}
+
+.quantity-input {
+    width: 40px;
+    border: none;
+    text-align: center;
+    font-size: 16px;
+    font-weight: bold;
+    margin-right: 5px;
+}
+
+.quantity-input:focus {
+    outline: none;
+}

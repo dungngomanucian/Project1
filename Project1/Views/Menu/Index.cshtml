@@ -1,0 +1,156 @@
+﻿@using Project1.ViewModels;
+@model List<TProduct>
+
+@{
+    ViewData["Title"] = "Index";
+    Layout = "~/Views/Shared/_LayoutWagon.cshtml";
+
+    var isFilterPage = false;
+}
+
+<link href="../css/menu.css" rel="stylesheet" />
+<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css">
+
+<section class="py-4 overflow-hidden">
+    <div class="container">
+        <div class="col-lg-7 mx-auto text-center mt-7 mb-5">
+            <h5 class="fw-bold fs-3 fs-lg-5 lh-sm">Menu</h5>
+        </div>
+
+        <div class="row flex-center">
+            <div class="col-12">
+                <div class="carousel slide" id="carouselSearchByFood" data-bs-touch="false" data-bs-interval="false">
+                    <div class="carousel-inner">
+                        <div class="carousel-item active" data-bs-interval="10000">
+                            @await Component.InvokeAsync("MenuIndex")
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <script>
+            function selectMenuItem(element) {
+                // Xóa lớp 'selected-img' và 'selected-text' khỏi tất cả ảnh và chữ
+                document.querySelectorAll('.menu-img').forEach(img => {
+                    img.classList.remove('selected-img');
+                });
+
+                document.querySelectorAll('.menu-text').forEach(text => {
+                    text.classList.remove('selected-text');
+                });
+
+                // Thêm lớp 'selected-img' vào ảnh và 'selected-text' vào chữ của mục được chọn
+                element.querySelector('.menu-img').classList.add('selected-img');
+                element.querySelector('.menu-text').classList.add('selected-text');
+            }
+        </script>
+
+        <div class="col-12">
+            <div class="row gx-3 h-100 align-items-center justify-content-center">
+                @foreach (var item in Model)
+                {
+                    <div class="col-sm-6 col-md-4 col-lg-3 mb-5">
+                        <div class="card card-span h-100 rounded-3">
+                            <img class="img-fluid rounded-3 h-100" src="@Url.Content("../ImagesProduct/" + item.Image)" alt="..." />
+                            <div class="card-body ps-0">
+                                <h5 class="fw-bold text-1000 text-truncate mb-1">@item.Name</h5>
+                                <div><span class="text-warning me-2"><i class="fas fa-map-marker-alt"></i></span><span class="text-primary">Sixter's Pizza</span></div>
+                                <span class="text-1000 fw-bold">
+                                    @(item.TProductDetails != null && item.TProductDetails.Count() > 0 ? String.Format("{0:0,0 \u20AB}", item.TProductDetails.First().Price).Replace(",", ".") : "null")
+                                </span>
+                            </div>
+                        </div>
+                        <div class="d-grid gap-2">
+                            <a class="btn btn-lg btn-danger" href="#!" role="button"
+                               onclick="showProductModal(
+                                '@item.ProductId',
+                                '@item.Name',
+                                '@item.Description',
+                                '@Url.Content("../ImagesProduct/" + item.Image)',
+                                '@item.CategoryId',
+                                '@isFilterPage'
+                            )">
+                                Chọn Mua
+                            </a>
+                        </div>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Modal -->
+<div class="modal fade" id="productModal" tabindex="-1" aria-labelledby="productModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="modalProductName" style="font-size:20px; color:#e74c3c"></h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <!-- Left Side: Product Image and Description -->
+                    <div class="col-lg-6 col-md-12 col-sm-12">
+                        <img id="modalProductImage" src="" alt="Product Image" class="img-fluid mb-3">
+                        <h5><span id="modalProductPrice" style="font-size:24px; color:#F17228; text-align:center; display:block; font-weight:600"></span></h5>
+                        <!-- Quantity and Price -->
+                        <div class="mt-3 mb-3">
+                            <div class="quantity-container">
+                                <button class="btn quantity-btn decrease" onclick="updateQuantity(-1)" type="button">−</button>
+                                <input type="text" id="quantityInput" class="quantity-input" value="1" readonly>
+                                <button class="btn quantity-btn increase" onclick="updateQuantity(1)" type="button">+</button>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Right Side: Options -->
+                    <div class="col-lg-6 col-md-12 col-sm-12">
+                        <p id="modalProductDescription"></p>
+                        <!-- Size Options -->
+                        <div id="sizeOptions">
+                            <h6 id="sizeOptions" style="font-size:18px">Kích cỡ</h6>
+                            <div>
+                                <input type="radio" id="sizeSmall" name="size" value="1">
+                                <label for="sizeSmall">Nhỏ</label>
+                            </div>
+                            <div>
+                                <input type="radio" id="sizeMedium" name="size" value="2">
+                                <label for="sizeMedium">Vừa</label>
+                            </div>
+                            <div>
+                                <input type="radio" id="sizeLarge" name="size" value="3">
+                                <label for="sizeLarge">Lớn</label>
+                            </div>
+                        </div>
+
+                        <!-- Crust Options -->
+                        <div id="crustOptions">
+                            <h6 class="mt-3" style="font-size:18px">Đế viền</h6>
+                            <div>
+                                <input type="radio" id="crustThin" name="crust" value="1">
+                                <label for="crustThin">Đế mỏng</label>
+                            </div>
+                            <div>
+                                <input type="radio" id="crustThick" name="crust" value="2">
+                                <label for="crustThick">Đế dày</label>
+                            </div>
+                            <div>
+                                <input type="radio" id="crustCheese" name="crust" value="3">
+                                <label for="crustCheese">Đế viền phô mai</label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-lg btn-secondary" data-bs-dismiss="modal">Đóng</button>
+                <button id="addToCartButton" type="button" class="btn btn-lg btn-danger" data-bs-dismiss="modal">Đưa vào giỏ hàng</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="/lib/jquery//dist/jquery.js"></script>
+<script src="//cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
+<script src="../js/menu.js"></script>

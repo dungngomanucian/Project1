@@ -1,0 +1,11 @@
+﻿@model IEnumerable<TCategory>
+<ul class="list-unstyled mb-md-4 mb-lg-0">
+    @foreach (var item in Model){
+        <li class="lh-lg">
+            <a class="text-200 text-decoration-none" 
+                asp-controller="Menu"
+                asp-action="ProductByCategory"
+               asp-route-CategoryID="@item.CategoryId">@item.Name</a>
+        </li>
+    }
+</ul>

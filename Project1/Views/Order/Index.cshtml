@@ -1,0 +1,123 @@
+﻿@using X.PagedList.Mvc.Core
+@model X.PagedList.IPagedList<TOrder>
+@{
+    ViewData["Title"] = "Index";
+    Layout = "~/Views/Shared/_LayoutWagon.cshtml";
+}
+
+<style>
+    .order-card {
+        border: 1px solid #ddd;
+        border-radius: 10px;
+        padding: 20px;
+        background-color: #ffffff;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        height: 100%;
+    }
+
+    .cancel-order:hover {
+        text-decoration: underline;
+        color: #e63946;
+    }
+</style>
+
+<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css">
+
+<div class="container mt-8 mb-5">
+    <h2 class="mb-4">Theo dõi đơn hàng</h2>
+
+    <div class="row g-4">
+        @foreach (var item in Model)
+        {      
+            <div class="col-lg-4 col-md-6 col-sm-12">
+                <div id="orderCard-@item.OrderId" class="order-card p-4 bg-white rounded">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <img src="https://cdn-icons-png.flaticon.com/512/1998/1998460.png" alt="Pizza Icon" width="50">
+                        </div>
+                        <div>
+                            <span class="cancel-order text-danger fw-bold" style="cursor: pointer;" data-bs-toggle="modal" data-bs-target="#cancelOrderModal-@item.OrderId">Hủy đơn</span>
+                        </div>
+                    </div>
+                    <div class="mt-4">
+                        <h6 class="mb-2 fw-bold" style="font-size:16px">Mã đơn hàng: @item.OrderId</h6>
+                        <p class="mb-1 fw-bold">Ngày đặt hàng: @item.Date</p>
+                        <p class="mb-1">Trạng thái: @(item.Status != null ? item.Status.Name : "null")</p>
+                        <p class="mb-1">Thanh toán: @(item.PaymentMethod != null ? item.PaymentMethod.Name : "null")</p>
+                        <p class="mb-1">Mã giảm giá: @((item.Voucher?.Code) ?? "Không áp dụng")</p>
+                        <h6 class="mt-2 text-danger" style="font-size:16px">Tổng tiền: @String.Format("{0:0,0 \u20AB}", @item.TotalPrice).Replace(",", ".")</h6>
+                    </div>
+                    <div class="mt-4">
+                        <a asp-controller="Order" asp-action="OrderDetail" asp-route-orderId="@item.OrderId" class="btn btn-danger w-100 py-2">Xem chi tiết đơn hàng</a>
+                    </div>
+                </div>
+            </div>
+
+            <!--Modal xác nhận hủy đơn hàng-->
+            <div class="modal fade" id="cancelOrderModal-@item.OrderId" tabindex="-1" aria-labelledby="cancelOrderModalLabel-@item.OrderId" aria-hidden="true">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="cancelOrderModalLabel">Xác nhận hủy đơn hàng</h5>
+                        </div>
+                        <div class="modal-body">
+                            Bạn có chắc chắn muốn hủy đơn hàng này không?
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Không</button>
+                            <button type="button" class="btn btn-danger confirmCancel" id="confirmCancel" data-bs-dismiss="modal" data-order-id="@item.OrderId" data-card-id="orderCard-@item.OrderId">Hủy đơn hàng</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+
+    <div class="divide" style="display: inline-block; clear:both; text-align:center; margin-top: 25px">
+        @Html.PagedListPager(Model, page => Url.Action("Index", new { page = page }),
+                 new PagedListRenderOptions()
+        {
+            LiElementClasses = new List<String> { "page-item" },
+            PageClasses = new List<String> { "page-link" }
+        })
+    </div>
+</div>
+
+<script src="/lib/jquery//dist/jquery.js"></script>
+<script src="//cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        // Gán sự kiện cho tất cả các nút confirmCancel
+        document.querySelectorAll('.confirmCancel').forEach(button => {
+            button.addEventListener("click", function () {
+                const orderId = button.getAttribute('data-order-id');
+                const cardId = button.getAttribute('data-card-id');
+                const orderCard = document.getElementById(cardId);
+                console.log('orderCard: ' + orderCard);
+
+                fetch(`/api/OrderAPI/CancelOrder?id=${orderId}`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            toastr.success(data.message, "Thành công");
+                            // Cập nhật trạng thái DOM
+                            const statusText = orderCard.querySelector('p:nth-child(3)');
+                            statusText.textContent = "Trạng thái: Hủy";
+                        } else {
+                            toastr.warning(data.message, "Cảnh báo");
+                        }
+                    })
+                    .catch(error => {
+                        console.error("Error: ", error);
+                        toastr.error("Có lỗi xảy ra khi kết nối máy chủ", "Lỗi");
+                    });
+            });
+        });
+    });
+</script>
+

@@ -1,0 +1,213 @@
+﻿@model IEnumerable<Project1.ViewModels.CartItem>
+
+@{
+    ViewData["Title"] = "Index";
+    Layout = "~/Views/Shared/_LayoutWagon.cshtml";
+}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <!--  This file has been downloaded from bootdey.com @@bootdey on twitter -->
+    <!--  All snippets are MIT license http://bootdey.com/license -->
+    <title>bs4 cart - Bootdey.com</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <style type="text/css">
+        body {
+            margin-top: 110px;
+            background: #eee;
+        }
+
+        .ui-w-40 {
+            width: 40px !important;
+            height: auto;
+        }
+
+        .card {
+            box-shadow: 0 1px 15px 1px rgba(52,40,104,.08);
+        }
+
+        .ui-product-color {
+            display: inline-block;
+            overflow: hidden;
+            margin: .144em;
+            width: .875rem;
+            height: .875rem;
+            border-radius: 10rem;
+            -webkit-box-shadow: 0 0 0 1px rgba(0,0,0,0.15) inset;
+            box-shadow: 0 0 0 1px rgba(0,0,0,0.15) inset;
+            vertical-align: middle;
+        }
+    </style>
+
+    <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css">
+    <link href="../css/cart.css" rel="stylesheet"/>
+
+</head>
+
+<body>
+    <div class="container px-3 my-5 clearfix">
+        <!-- Shopping cart table -->
+        <div class="card">
+            <div class="card-header">
+                <h2>Giỏ hàng</h2>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-bordered">
+                        <thead>
+                            <tr>
+                                <th class="text-center py-3 px-4" style="min-width: 400px;">Sản phẩm</th>
+                                <th class="text-center py-3 px-4" style="width: 125px; min-width:125px">Đơn giá</th>
+                                <th class="text-center py-3 px-4" style="width: 120px; min-width:120px">Số lượng</th>
+                                <th class="text-center py-3 px-4" style="width: 135px; min-width:135px">Thành tiền</th>
+                                <th class="text-center align-middle py-3 px-0" style="min-width: 40px;"><a href="#" class="shop-tooltip float-none text-light" title="" data-original-title="Clear cart"><i class="ino ion-md-trash"></i></a></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var item in Model)
+                            {
+                                <tr>
+                                    <td class="p-4">
+                                        <div class="d-flex align-items-center">
+                                            <img src="@Url.Content("../ImagesProduct/" + @item.Image)" class="rounded me-4" alt="" style="width: 60px; height: auto;">
+                                            <div>
+                                                <a class="text-dark">@item.Name</a>
+
+                                                <small class="d-block">
+                                                    <span>Kích cỡ: </span>
+                                                    @{
+                                                        string sizeDescription = item.SizeId switch
+                                                        {
+                                                            1 => "Nhỏ",
+                                                            2 => "Vừa",
+                                                            3 => "Lớn",
+                                                            _ => "Không xác định"
+                                                        };
+                                                    }
+                                                    @sizeDescription
+                                                    <span> | Đế viền: </span>
+                                                    @{
+                                                        string crustDescription = item.CrustId switch
+                                                        {
+                                                            1 => "Mỏng",
+                                                            2 => "Dày",
+                                                            3 => "Phô mai",
+                                                            _ => "Không xác định"
+                                                        };
+                                                    }
+                                                    @crustDescription
+                                                </small>
+                                                
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td class="text-center align-middle p-4">@String.Format("{0:0,0 \u20AB}", item.Price).Replace(",", ".")</td>
+                                    <td class="text-center align-middle p-4">@item.Quantity</td>
+                                    <td class="text-center align-middle p-4">@String.Format("{0:0,0 \u20AB}", item.ThanhTien).Replace(",", ".")</td>
+                                    <td class="text-center align-middle px-0">
+                                        <a class="remove-cart shop-tooltip close float-none text-danger" title="Xóa" data-product-detail-id="@item.ProductDetailId" style="cursor:pointer">
+                                            ×
+                                        </a>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+                <!-- / Shopping cart table -->
+
+                <div class="row mt-3">
+                    <div class="col-6">
+                        <a href="#" class="text-muted font-weight-normal m-0" data-bs-toggle="modal" data-bs-target="#discountModal" id="open-modal-button">
+                            Chọn ưu đãi
+                        </a>
+                        <div id="voucher-code" class="fw-bold">@ViewBag.VoucherCode</div>
+                    </div>
+                    
+                    <div class="col-6">
+                        <div class="row">                          
+                            <div class="col-lg-4 col-md-12 col-sm-12 mb-3">
+                                <div class="text-end text-muted m-0">Tổng tiền</div>
+                                <div id="total-price" class="text-end fw-bold" data-total-price="@Model.Sum(p => p.ThanhTien)"> 
+                                    @(Model.Sum(p => p.ThanhTien) > 0 ? String.Format("{0:0,0 \u20AB}", Model.Sum(p => p.ThanhTien)).Replace(",", ".") : "0 \u20AB")
+                                </div>
+                            </div>
+                            <div class="col-lg-4 col-md-12 col-sm-12 mb-3">
+                                <div class="text-end text-muted m-0">Giảm khuyến mại</div>
+                                <div id="discount-value" class="text-end fw-bold">
+                                    @(ViewBag.DiscountAmount > 0 ? String.Format("{0:0,0 \u20AB}", ViewBag.DiscountAmount).Replace(",", ".") : "0 \u20AB")
+                                </div>
+                            </div>
+                            <div class="col-lg-4 col-md-12 col-sm-12 mb-3">
+                                <div class="text-end text-muted m-0">Tổng thanh toán</div>
+                                <div id="final-price" class="text-end fw-bold">
+                                    @(ViewBag.FinalPrice > 0 ? String.Format("{0:0,0 \u20AB}", ViewBag.FinalPrice).Replace(",", ".") : "0 \u20AB")
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="d-flex justify-content-end">
+                    <div>
+                        <a asp-controller="Menu" asp-action="Index" type="button" class="btn btn-lg btn-secondary" style="margin-right:10px;">Quay lại</a>                    
+                        <button id="checkout" type="submit" class="btn btn-lg btn-primary">Thanh toán</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Discount Modal -->
+    <div class="modal fade" id="discountModal" tabindex="-1" role="dialog" aria-labelledby="discountModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="discountModalLabel">Danh sách Voucher</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+
+                <div class="modal-body" style="max-height:600px; overflow-y:auto">
+                    <div id="voucher-list" class="discount-list">
+                        <!-- Example Discount Item -->
+                        @foreach (var item in ViewBag.Vouchers)
+                        {
+                            bool isValid = false;                      
+                            if (Model.Sum(p => p.ThanhTien) >= item.MinOrderValue && DateTime.Now >= item.StartDate && DateTime.Now <= item.ExpirationDate && item.Number > 0)
+                            {
+                                isValid = true;
+                            }
+                            string buttonText = DateTime.Now < item.StartDate ? "Sắp ra mắt" : (DateTime.Now > item.ExpirationDate ? "Hết hạn" : (Model.Sum(p => p.ThanhTien) < item.MinOrderValue ? "Không đủ điều kiện" : (item.Number <= 0 ? "Hết số lượng" : "Áp dụng")));
+                            string pointerEvents = isValid ? "auto" : "none";
+                            <div class="discount-item d-flex justify-content-between align-items-center mb-3 p-3" style="background-color: #ffefe6; border-radius: 10px; opacity:@(isValid ? "1" : "0.6")">
+                                <div class="d-flex align-items-center">                                   
+                                    @* <img src="../1LayoutIndex/logo_web.jpg" alt="Icon" style="width:30px; height:100%; margin-right:10px;">  *@                                                                  
+                                    <div>
+                                        <strong>@item.Code</strong><br>
+                                        @if (item.DiscountValue > 0)
+                                        {
+                                            <span>Giảm @(item.IsPercentDiscountType ? item.DiscountValue + $"% tối đa {@String.Format("{0:0,0 \u20AB}", item.MaxDiscountValue).Replace(",", ".")}" : String.Format("{0:0,0 \u20AB}", item.DiscountValue).Replace(",", "."))</span>
+                                            <br>
+                                        }
+                                        <span>Đơn tối thiểu @String.Format("{0:0,0 \u20AB}", item.MinOrderValue).Replace(",", ".")</span><br>
+                                        <span>Số voucher hiện có @item.Number</span><br>
+                                        <span>@item.StartDate.ToString("dd/MM/yyyy") - @item.ExpirationDate.ToString("dd/MM/yyyy")</span>
+                                    </div>
+                                </div>
+                                <a href="#" class="apply-discount" data-bs-dismiss="modal" voucher-id="@item.VoucherId" style="pointer-events:@pointerEvents">@buttonText</a>
+                            </div>                                                   
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="/lib/jquery//dist/jquery.js"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
+    <script src="../js/cart.js"></script>
+</body>
+</html>
+

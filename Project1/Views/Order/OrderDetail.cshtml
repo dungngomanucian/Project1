@@ -1,0 +1,224 @@
+﻿@model TOrder
+@{
+    ViewData["Title"] = "OrderDetail";
+    Layout = "~/Views/Shared/_LayoutWagon.cshtml";
+
+    double? tongTien = 0;
+}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <!--  This file has been downloaded from bootdey.com @@bootdey on twitter -->
+    <!--  All snippets are MIT license http://bootdey.com/license -->
+    <title>bs4 cart - Bootdey.com</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <style type="text/css">
+        body {
+            margin-top: 110px;
+            background: #eee;
+        }
+
+        .ui-w-40 {
+            width: 40px !important;
+            height: auto;
+        }
+
+        .card {
+            box-shadow: 0 1px 15px 1px rgba(52,40,104,.08);
+        }
+
+        .ui-product-color {
+            display: inline-block;
+            overflow: hidden;
+            margin: .144em;
+            width: .875rem;
+            height: .875rem;
+            border-radius: 10rem;
+            -webkit-box-shadow: 0 0 0 1px rgba(0,0,0,0.15) inset;
+            box-shadow: 0 0 0 1px rgba(0,0,0,0.15) inset;
+            vertical-align: middle;
+        }
+    </style>
+
+    <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css">
+</head>
+<body>
+    <div class="container px-3 my-5 clearfix">
+        <!-- Shopping cart table -->
+        <div class="card">
+            <div class="card-header">
+                <h2>Mã đơn hàng: #@Model.OrderId - Ngày đặt: @Model.Date</h2>
+            </div>
+            <div class="card-body">
+                @if (Model.Status?.StatusId == 1)
+                {
+                    <div class="progress mb-3">
+                        <div class="progress-bar progress-bar-striped progress-bar-animated bg-info" role="progressbar" aria-valuenow="20" aria-valuemin="0" aria-valuemax="100" style="width: 20%;">
+                            @Model.Status.Name
+                        </div>
+                    </div>
+                }
+                else if (Model.Status?.StatusId == 2)
+                {
+                    <div class="progress mb-3">
+                        <div class="progress-bar progress-bar-striped progress-bar-animated bg-info" role="progressbar" aria-valuenow="40" aria-valuemin="0" aria-valuemax="100" style="width: 40%;">
+                            @Model.Status.Name
+                        </div>
+                    </div>
+                }
+                else if (Model.Status?.StatusId == 3)
+                {
+                    <div class="progress mb-3">
+                        <div class="progress-bar progress-bar-striped progress-bar-animated bg-warning" role="progressbar" aria-valuenow="60" aria-valuemin="0" aria-valuemax="100" style="width: 60%;">
+                            @Model.Status.Name
+                        </div>
+                    </div>
+                }
+                else if (Model.Status?.StatusId == 4)
+                {
+                    <div class="progress mb-3">
+                        <div class="progress-bar progress-bar-striped progress-bar-animated bg-warning" role="progressbar" aria-valuenow="80" aria-valuemin="0" aria-valuemax="100" style="width: 80%;">
+                            @Model.Status.Name
+                        </div>
+                    </div>
+                }
+                else if (Model.Status?.StatusId == 5)
+                {
+                    <div class="progress mb-3">
+                        <div class="progress-bar progress-bar-striped progress-bar-animated bg-success" role="progressbar" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100" style="width: 100%;">
+                            @Model.Status.Name
+                        </div>
+                    </div>
+                }
+                else if (Model.Status?.StatusId == 6)
+                {
+                    <div class="progress mb-3">
+                        <div class="progress-bar progress-bar-striped progress-bar-animated bg-danger" role="progressbar" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100" style="width: 100%;">
+                            @Model.Status.Name
+                        </div>
+                    </div>
+                }
+
+                <div class="table-responsive">
+                    <table class="table table-bordered">
+                        <thead>
+                            <tr>
+                                <th class="text-center py-3 px-4" style="min-width: 400px;">Sản phẩm</th>
+                                <th class="text-center py-3 px-4" style="width: 125px; min-width:125px">Đơn giá</th>
+                                <th class="text-center py-3 px-4" style="width: 120px; min-width:120px">Số lượng</th>
+                                <th class="text-center py-3 px-4" style="width: 135px; min-width:135px">Thành tiền</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var item in Model.TOrderDetails)
+                            {
+                                <tr>
+                                    <td class="p-4">
+                                        <div class="d-flex align-items-center">
+                                            <img src="@Url.Content("../ImagesProduct/" + ((item.ProductDetail?.Product?.Image) ?? ""))" class="rounded me-4" alt="" style="width: 60px; height: auto;">
+                                            <div>
+                                                <a class="text-dark">@((item.ProductDetail?.Product?.Name) ?? "null")</a>
+                                                @if (item.ProductDetail?.Product?.Category?.Name == "Pizza")
+                                                {
+                                                    <small class="d-block">
+                                                        Kích cỡ: @((item.ProductDetail?.Size?.Name) ?? "null") |
+                                                        Đế viền: @((item.ProductDetail?.Crust?.Name) ?? "null")
+                                                    </small>
+                                                }
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td class="text-center align-middle p-4">@String.Format("{0:0,0 \u20AB}", ((item.ProductDetail?.Price) ?? 0)).Replace(",", ".")</td>
+                                    <td class="text-center align-middle p-4">@item.Number</td>
+                                    <td class="text-center align-middle p-4">@String.Format("{0:0,0 \u20AB}", ((item.ProductDetail?.Price) ?? 0) * item.Number).Replace(",", ".")</td>
+                                </tr>
+                                tongTien += ((item.ProductDetail?.Price) ?? 0) * item.Number;
+                            }
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="row mt-3">
+                    <div class="col-lg-2 col-md-4 col-sm-12 mb-3">
+                        <label class="text-muted m-0">Mã giảm giá</label>
+                        <div class="fw-bold">@(Model.Voucher?.Code ?? "Không áp dụng")</div>
+                    </div>
+                    <div class="col-lg-4 col-md-8 col-sm-12 mb-3">
+                        <label class="text-muted m-0">Địa chỉ giao hàng</label>
+                        <div class="fw-bold">@Model.Address</div>
+                    </div>                   
+                    <div class="col-lg-2 col-md-4 col-sm-12 mb-3">
+                        <label class="text-muted m-0">Tổng tiền</label>
+                        <div class="fw-bold">@String.Format("{0:0,0 \u20AB}", tongTien).Replace(",", ".")</div>
+                    </div>
+                    <div class="col-lg-2 col-md-4 col-sm-12 mb-3">
+                        <label class="text-muted m-0">Giảm khuyến mại</label>
+                        <div class="fw-bold">@(Model.Voucher != null ? (Model.Voucher.IsPercentDiscountType == true ? String.Format("{0:0,0 \u20AB}", Model.Voucher.DiscountValue * tongTien / 100).Replace(",", ".") : String.Format("{0:0,0 \u20AB}", Model.Voucher.DiscountValue).Replace(",", ".")) : "0 \u20AB")</div>
+                    </div>
+                    <div class="col-lg-2 col-md-4 col-sm-12 mb-3">
+                        <label class="text-muted m-0">Tổng thanh toán</label>
+                        <div class="fw-bold">@String.Format("{0:0,0 \u20AB}", Model.TotalPrice).Replace(",", ".")</div>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-lg-2 col-md-4 col-sm-12 mb-3">
+                        <label class="text-muted m-0">Người nhận</label>
+                        <div class="fw-bold">@((Model.Customer?.Nickname) ?? "null")</div>
+                    </div>
+                    <div class="col-lg-2 col-md-4 col-sm-12 mb-3">
+                        <label class="text-muted m-0">Email</label>
+                        <div class="fw-bold">@((Model.Customer?.Email) ?? "null")</div>
+                    </div>
+                    <div class="col-lg-2 col-md-4 col-sm-12 mb-3">
+                        <label class="text-muted m-0">Số điện thoại</label>
+                        <div class="fw-bold">@((Model.Customer?.PhoneNumber) ?? "null")</div>
+                    </div>
+                    <div class="col-lg-2 col-md-4 col-sm-12 mb-3">
+                        <label class="text-muted m-0">Hình thức thanh toán</label>
+                        <div class="fw-bold">@((Model.PaymentMethod?.Name) ?? "null")</div>
+                    </div>                   
+                    <div class="col-lg-4 col-md-7 col-sm-12 mb-3">
+                        <div class="row">
+                            <label class="col-7 text-muted m-0">Cảm nhận về đơn hàng</label>
+                            <a class="text-end fw-bold col-5" id="submit-feeling" data-order-id="@Model.OrderId" style="cursor:pointer">Gửi</a>
+                        </div>                     
+                        <textarea class="form-control fw-bold mt-2" name="CustomerFeeling" id="CustomerFeeling" rows="2" placeholder="Chia sẻ cảm nhận của bạn về đơn hàng...">@Model.CustomerFeeling</textarea>
+                    </div>                                   
+                </div>
+
+                <div class="d-flex justify-content-start">
+                    <div>
+                        <a asp-controller="Order" asp-action="Index" type="button" class="btn btn-lg btn-secondary" style="margin-right:10px;">Quay lại</a>
+                        <button id="cancel-order" type="button" class="btn btn-lg btn-danger" data-bs-toggle="modal" data-bs-target="#cancelOrderModal">Hủy đơn hàng</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!--Modal xác nhận hủy đơn hàng-->
+    <div class="modal fade" id="cancelOrderModal" tabindex="-1" aria-labelledby="cancelOrderModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="cancelOrderModalLabel">Xác nhận hủy đơn hàng</h5>
+                </div>
+                <div class="modal-body">
+                    Bạn có chắc chắn muốn hủy đơn hàng này không?
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Không</button>
+                    <button type="button" class="btn btn-danger" id="confirmCancel" data-bs-dismiss="modal" data-order-id="@Model.OrderId">Hủy đơn hàng</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="/lib/jquery//dist/jquery.js"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
+    <script src="../js/order.js"></script>
+</body>
+</html>

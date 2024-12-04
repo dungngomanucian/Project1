@@ -1,0 +1,128 @@
+﻿@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
+@using Project1.Models;
+@using X.PagedList.Mvc.Core;
+@model X.PagedList.IPagedList<TProduct>
+
+@{
+    ViewData["Title"] = "ListProduct";
+    Layout = "~/Areas/Admin/Views/Shared/_LayoutAdmin.cshtml";
+}
+
+<h1>Product</h1>
+
+<p>
+    <a asp-action="AddProduct" >Create New</a>   
+</p>
+<div class="d-flex align-items-center mb-3">
+    <div class="me-2">
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" 
+        stroke-linecap="round" stroke-linejoin="round" class="feather feather-layers align-middle me-2">
+            <polygon points="12 2 2 7 12 12 22 7 12 2"></polygon>
+            <polyline points="2 17 12 22 22 17"></polyline>
+            <polyline points="2 12 12 17 22 12"></polyline>
+        </svg>
+        <span class="align-middle">Filter</span>
+    </div>
+    <select class="form-select" onchange="redirectToCategory(this.value)">
+        <option value="" disabled selected>
+            Choose 1 product type
+        </option>
+        <option value="1">Pizza</option>
+        <option value="2">Món khai vị</option>
+        <option value="3">Món gà</option>
+        <option value="4">Combo</option>
+        <option value="5">Thức uống</option>
+    </select>
+</div>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+               Category
+            </th>
+            <th>
+                Name
+            </th>
+           
+            <th>
+                Description
+            </th>
+            <th>
+               Deleted
+            </th>
+            <th>
+                Created By
+            </th>
+            <th>
+               Created Date
+            </th>
+            <th>
+                Last Modified By
+            </th>
+            <th>
+                Last Modified Date
+            </th>
+           
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+@foreach (var item in Model) {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.Category.Name)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Name)
+            </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Description)
+                </td>
+            
+           
+            
+            <td>
+                @Html.DisplayFor(modelItem => item.Deleted)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.CreatedBy)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.CreatedDate)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.LastModifiedBy)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.LastModifiedDate)
+            </td>
+            
+            <td>
+                <a asp-action="UpdateProduct" asp-route-productId="@item.ProductId">Edit</a> |
+                <a asp-action="Details" asp-route-id="@item.ProductId">Details</a> |
+                <a asp-action="DeleteProduct" asp-route-productId="@item.ProductId">Delete</a>
+            </td>
+        </tr>
+}
+    </tbody>
+</table>
+<div class=".pagination btn-group me-2" role="group" aria-label="First group">
+    @Html.PagedListPager(Model,
+            page => Url.Action("ListProduct", new { page = page }),
+            new PagedListRenderOptions
+    {
+        UlElementClasses = new[] { "pagination" },
+        LiElementClasses = new[] { "page-item" },
+        PageClasses = new[] { "page-link", "btn", "btn-info" }
+    })
+
+</div>
+<script>
+    function redirectToCategory(categoryId) {
+        if (categoryId) {
+            // Chuyển hướng đến action ListProductOptimizeByCategory với categoryId
+            window.location.href = '@Url.Action("ListProductOptimizeByCategory", "HomeAdmin")?categoryId=' + categoryId;
+        }
+    }
+</script>

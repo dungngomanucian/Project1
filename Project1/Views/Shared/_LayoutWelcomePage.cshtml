@@ -1,0 +1,78 @@
+﻿<!DOCTYPE html>
+<html lang="en-US" dir="ltr">
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+
+    <!-- ===============================================-->
+    <!--    Document Title-->
+    <!-- ===============================================-->
+    <title>Sixter's Pizza</title>
+
+
+    <!-- ===============================================-->
+    <!--    Favicons-->
+    <!-- ===============================================-->
+    <link rel="apple-touch-icon" sizes="180x180" href="../1LayoutIndex/assets/img/favicons/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="../1LayoutIndex/assets/img/favicons/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="../1LayoutIndex/assets/img/favicons/favicon-16x16.png">
+    <link rel="shortcut icon" type="image/x-icon" href="../1LayoutIndex/assets/img/favicons/favicon.ico">
+    <link rel="manifest" href="../1LayoutIndex/assets/img/favicons/manifest.json">
+    <meta name="msapplication-TileImage" content="../1LayoutIndex/assets/img/favicons/mstile-150x150.png">
+    <meta name="theme-color" content="#ffffff">
+
+
+    <!-- ===============================================-->
+    <!--    Stylesheets-->
+    <!-- ===============================================-->
+    <link href="../1LayoutIndex/assets/css/theme.css" rel="stylesheet" />
+
+    @* Hiển thị list địa chỉ *@
+    @* Begin *@
+    <link href='https://api.mapbox.com/mapbox-gl-js/v2.6.1/mapbox-gl.css' rel='stylesheet' />
+    <style>
+
+
+    </style>
+    @* End *@
+
+</head>
+
+
+<body>
+    <!-- ===============================================-->
+    <!--    Main Content-->
+    <!-- ===============================================-->
+    <main class="main" id="top">
+        @Html.Partial("_PartialHeader")
+        @RenderBody()
+        @Html.Partial("_PartialFooter")
+    </main>
+    <!-- ===============================================-->
+    <!--    End of Main Content-->
+    <!-- ===============================================-->
+    <!-- ===============================================-->
+    <!--    JavaScripts-->
+    <!-- ===============================================-->
+    <script src="../1LayoutIndex/vendors/@@popperjs/popper.min.js"></script>
+    <script src="../1LayoutIndex/vendors/bootstrap/bootstrap.min.js"></script>
+    <script src="../1LayoutIndex/vendors/is/is.min.js"></script>
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=window.scroll"></script>
+    <script src="../1LayoutIndex/vendors/fontawesome/all.min.js"></script>
+    <script src="../1LayoutIndex/assets/js/theme.js"></script>
+
+    @* Hiển thị list địa chỉ *@
+    @* Begin *@
+    <script src='https://api.mapbox.com/mapbox-gl-js/v2.6.1/mapbox-gl.js'></script>
+    <script>
+        const accessToken = 'pk.eyJ1Ijoic292aWV0cGxnNjEyIiwiYSI6ImNsdWFqYzR4ejBsM2Uyc2xkaHYzYzVsOXMifQ.tDjyjf6lgxEemlMnyHy_XA';
+    </script>
+    @* End *@
+
+    <link href="https://fonts.googleapis.com/css2?family=Source+Sans+Pro:wght@200;300;400;600;700;900&amp;display=swap" rel="stylesheet">
+</body>
+
+</html>
