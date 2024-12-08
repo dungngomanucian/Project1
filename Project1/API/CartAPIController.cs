@@ -26,8 +26,8 @@ namespace Project1.API
             {
                 return Ok(new
                 {
-                    success = false,
-                    message = "Hãy nhập địa chỉ giao hàng!"
+                    //success = false,
+                    //message = "Hãy nhập địa chỉ giao hàng!"
                 });
             }
             if (item == null)
