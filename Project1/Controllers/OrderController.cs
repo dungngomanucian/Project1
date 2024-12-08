@@ -51,19 +51,5 @@ namespace Project1.Controllers
                  
             return View(order);
         }
-
-        [HttpPost]
-        IActionResult UpdateCustomerFeeling(long? id, string? customerFeeling)
-        {
-            var order = db.TOrders.SingleOrDefault(o => o.OrderId == id);
-            if (order == null)
-            {
-                return NotFound();
-            }
-            order.CustomerFeeling = customerFeeling;
-            db.TOrders.Update(order);
-            db.SaveChanges();
-            return RedirectToAction("OrderDetail", "Order", id);
-        }
     }
 }
