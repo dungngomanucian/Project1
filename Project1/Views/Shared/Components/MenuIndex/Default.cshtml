@@ -69,11 +69,13 @@
     <ul class="nav-links">
     @foreach (var item in Model)
     {
-        <li class="center">
-            <a asp-controller="Menu"
-                asp-action="ProductByCategory"
-                asp-route-CategoryID="@item.CategoryId">@item.Name</a>
-        </li>
+        if(item.CategoryId != 4){
+            <li class="center">
+                <a asp-controller="Menu"
+                    asp-action="ProductByCategory"
+                    asp-route-CategoryID="@item.CategoryId">@item.Name</a>
+            </li>
+        }
     }
     </ul>
 </div>
