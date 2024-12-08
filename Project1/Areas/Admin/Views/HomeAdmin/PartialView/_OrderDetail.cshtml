@@ -1,0 +1,129 @@
+﻿@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
+@model Project1.Areas.Admin.ViewModels.OrderDetail_ViewModel
+
+<div class="row">
+    <div class="col-6 align-items-center"><h4 class="chitiet ">Chi tiết hoá đơn</h4></div>
+    <div class="col-6"><h4><span class="close-btn" onclick="closeModal()">&times;</span></h4></div>
+</div>
+<div class="row">
+    <div class="col-12"><h5></h5></div>
+</div>
+<div class="column">  
+    @if (Model.OCombo != null)
+    {
+        <p>Combo áp dụng: @Model.OCombo.Combo.Name</p>
+    }
+    else
+    {
+        <p>Không combo</p>
+    }
+    <table class="table-hover table-bordered custom-table table-responsive pt-3">
+        <thead>
+            <tr>
+                <th>Stt</th>
+                <th>Tên sản phẩm</th>
+                <th>Ảnh</th>
+                <th>Kích cỡ</th>
+                <th>Kiểu đế</th>
+                <th>Số lượng</th>
+                <th>Giá / 1 sản phẩm</th>               
+            </tr>
+        </thead>
+        <tbody>
+            @if(Model.SelectedProducts!=null && @Model.SelectedProducts.Any()){
+                int index = 1; double? totalPrice_preUseVou = 0; 
+                @foreach (var product in Model.SelectedProducts)
+                {
+                    double? productTotal = product.Price * product.Quantity;
+                    totalPrice_preUseVou += productTotal;
+                    <tr>
+                        <td>@index</td>
+                        <td>@product.ProductName</td>
+                        <td>
+                            @if (!string.IsNullOrEmpty(product.ProductImage))
+                            {
+                                <img src="@Url.Content("../../ImagesProduct/" + product.ProductImage)" alt="Product Image" style="max-width: 50px; max-height: 50px;" />
+                            }
+                        </td>
+                        @if (product.CategoryName == "Pizza")
+                        {
+                            <td>@product.Size</td>
+                            <td>@product.Crust</td>
+                        }
+                        else
+                        {
+                            <td>none</td>
+                            <td>none</td>
+                        }
+                        <td>@product.Quantity</td>
+                        <td>@product.Price</td>
+                    </tr>
+                    
+                    index++;
+                }
+                double? voucher_de = 0;
+                voucher_de = (totalPrice_preUseVou - Model.Order.TotalPrice)*(-1);
+                @if (Model.Order.Voucher != null)
+                {
+                   
+                    <tr>
+                        <td colspan="6" style="text-align: left; font-weight: bold;">Voucher áp dụng: @Model.Order.Voucher.Code . Giảm giá:</td>
+                        <td colspan="1" style="font-weight: bold; text-align: center;"> @voucher_de </td>
+                    </tr>
+                    <tr>
+                        <td colspan="6" style="text-align: left; font-weight: bold;">Tổng tiền:</td>
+                        <td colspan="1" style="font-weight: bold; text-align: center;">@Model.TotalPriceAfterUseVoucher.ToString()</td>
+                    </tr>
+                }
+                else
+                {
+                    <tr>
+                        <td colspan="6" style="text-align: left; font-weight: bold;">Tổng tiền:</td>
+                        <td colspan="1" style="font-weight: bold; text-align: center;"> @Model.TotalPriceAfterUseVoucher.ToString() </td>
+                    </tr>
+                    <p>Không có Voucher nào được áp dụng.</p>
+                }
+            }
+            else
+            {
+                <p>Không có sản phẩm nào trong đơn hàng.</p>
+            }
+        </tbody>
+    </table>  
+</div>
+<br />
+<div class="row">
+    @if (Model.Order.StatusId==1){
+        <div class="col-12 btn_accept">
+            <button type="button" class="btn btn-inverse-dark btn-sm">
+                <a class="" link_btn confirm-accept"" asp-action="Accept" asp-route-orderId="@Model.Order.OrderId">Xác nhận</a>
+            </button>
+        </div>
+    }
+    else
+    {
+        
+    }
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        // Lấy tất cả các liên kết có lớp 'confirm-accept'
+        const links = document.querySelectorAll('.confirm-accept');
+
+        links.forEach(link => {
+            link.addEventListener('click', function (event) {
+                event.preventDefault(); // Ngăn chặn hành động mặc định của thẻ a
+
+                // Hiển thị hộp thoại xác nhận
+                const userConfirmed = confirm('Bạn có chắc chắn muốn xác nhận đơn hàng này không?');
+
+                if (userConfirmed) {
+                    // Nếu người dùng đồng ý, chuyển hướng đến liên kết
+                    window.location.href = this.href;
+                }
+                // Nếu người dùng không đồng ý, không làm gì cả
+            });
+        });
+    });
+</script>

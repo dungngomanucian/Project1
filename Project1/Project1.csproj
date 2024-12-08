@@ -23,8 +23,29 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Areas\Admin\Data\" />
+    <Folder Include="Areas\Admin\Controllers\" />
     <Folder Include="Areas\Admin\Models\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="wwwroot\LayoutAdmin1\.DS_Store" />
+    <None Include="wwwroot\LayoutAdmin1\fonts\.DS_Store" />
+    <None Include="wwwroot\LayoutAdmin1\fonts\Roboto\.DS_Store" />
+    <None Include="wwwroot\LayoutAdmin1\images\.DS_Store" />
+    <None Include="wwwroot\LayoutAdmin1\images\auth\.DS_Store" />
+    <None Include="wwwroot\LayoutAdmin1\images\faces\.DS_Store" />
+    <None Include="wwwroot\LayoutAdmin1\js\.DS_Store" />
+    <None Include="wwwroot\LayoutAdmin1\pages\.DS_Store" />
+    <None Include="wwwroot\LayoutAdmin1\pages\charts\.DS_Store" />
+    <None Include="wwwroot\LayoutAdmin1\pages\forms\.DS_Store" />
+    <None Include="wwwroot\LayoutAdmin1\pages\icons\.DS_Store" />
+    <None Include="wwwroot\LayoutAdmin1\pages\samples\.DS_Store" />
+    <None Include="wwwroot\LayoutAdmin1\pages\tables\.DS_Store" />
+    <None Include="wwwroot\LayoutAdmin1\pages\ui-features\.DS_Store" />
+    <None Include="wwwroot\LayoutAdmin1\scss\.DS_Store" />
+    <None Include="wwwroot\LayoutAdmin1\scss\components\.DS_Store" />
+    <None Include="wwwroot\LayoutAdmin1\scss\mixins\.DS_Store" />
+    <None Include="wwwroot\LayoutAdmin1\vendors\.DS_Store" />
   </ItemGroup>
 
 </Project>
