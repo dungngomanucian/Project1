@@ -5,6 +5,12 @@
     Layout = "~/Views/Shared/_LayoutLogin.cshtml";
 }
 
+<style>
+    .col-md-6, .mb-3{
+        margin-bottom: 6px!important;
+    }
+</style>
+
 <div class="page-wrapper" id="main-wrapper" data-layout="vertical" data-navbarbg="skin6" data-sidebartype="full"
      data-sidebar-position="fixed" data-header-position="fixed">
     <div class="position-relative overflow-hidden radial-gradient min-vh-100 d-flex align-items-center justify-content-center">
@@ -14,7 +20,7 @@
                     <div class="card mb-0">
                         <div class="card-body" style="padding: 10px">
                             <a asp-controller="Welcome" asp-action="WelcomePage" class="text-nowrap logo-img text-center d-block py-3 w-100" style="padding: 0px!important">
-                                <img src="../1LayoutLogin/assets/images/logos/dark-logo.svg" width="180" alt="" style="border-radius: 50%">
+                                <img src="../1LayoutLogin/assets/images/logos/dark-logo.svg" width="180" alt="" style="border-radius: 50%" id="logo">
                                 <p class="text-center" style="color: #f8742c; font-size: 145%; font-weight: bold; margin: 0.5%">ĐĂNG KÝ TÀI KHOẢN</p>
                             </a>
                             <form asp-action="Resgister">
