@@ -74,31 +74,33 @@
                                             <img src="@Url.Content("../ImagesProduct/" + @item.Image)" class="rounded me-4" alt="" style="width: 60px; height: auto;">
                                             <div>
                                                 <a class="text-dark">@item.Name</a>
-
-                                                <small class="d-block">
-                                                    <span>Kích cỡ: </span>
-                                                    @{
-                                                        string sizeDescription = item.SizeId switch
-                                                        {
-                                                            1 => "Nhỏ",
-                                                            2 => "Vừa",
-                                                            3 => "Lớn",
-                                                            _ => "Không xác định"
-                                                        };
-                                                    }
-                                                    @sizeDescription
-                                                    <span> | Đế viền: </span>
-                                                    @{
-                                                        string crustDescription = item.CrustId switch
-                                                        {
-                                                            1 => "Mỏng",
-                                                            2 => "Dày",
-                                                            3 => "Phô mai",
-                                                            _ => "Không xác định"
-                                                        };
-                                                    }
-                                                    @crustDescription
-                                                </small>
+                                                @if(item.isPizza)
+                                                {
+                                                    <small class="d-block">
+                                                        <span>Kích cỡ: </span>
+                                                        @{
+                                                            string sizeDescription = item.SizeId switch
+                                                            {
+                                                                1 => "Nhỏ",
+                                                                2 => "Vừa",
+                                                                3 => "Lớn",
+                                                                _ => "Không xác định"
+                                                            };
+                                                        }
+                                                        @sizeDescription
+                                                        <span> | Đế viền: </span>
+                                                        @{
+                                                            string crustDescription = item.CrustId switch
+                                                            {
+                                                                1 => "Mỏng",
+                                                                2 => "Dày",
+                                                                3 => "Phô mai",
+                                                                _ => "Không xác định"
+                                                            };
+                                                        }
+                                                        @crustDescription
+                                                    </small>
+                                                }                                              
                                                 
                                             </div>
                                         </div>

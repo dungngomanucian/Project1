@@ -113,10 +113,12 @@
                                 <img src="../ImagesProduct/${item.image}" class="rounded me-4" alt="" style="width: 60px; height: auto;">
                                 <div>
                                     <a class="text-dark">${item.name}</a>
+                                    ${item.isPizza ? `
                                     <small class="d-block">
                                         <span>Kích cỡ: ${item.sizeId == 1 ? "Nhỏ" : item.sizeId == 2 ? "Vừa" : "Lớn"}</span> |
                                         <span>Đế viền: ${item.crustId == 1 ? "Mỏng" : item.crustId == 2 ? "Dày" : "Phô mai"}</span>
                                     </small>
+                                    ` : ''}
                                 </div>
                             </div>
                         </td>
