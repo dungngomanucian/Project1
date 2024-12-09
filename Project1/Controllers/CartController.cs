@@ -113,7 +113,7 @@ namespace Project1.Controllers
                     model.GhiChu,
                     1, // paymentmethod, can using this code: payment == "COD" ? 1 : 2
                     Cart,
-                    model.HoTen ?? khachHang?.Nickname
+                    model.HoTen ?? khachHang?.Nickname ?? ""
                 );
 
                 HttpContext.Session.Set<List<CartItem>>(MySetting.CART_KEY, new List<CartItem>());
@@ -284,12 +284,12 @@ namespace Project1.Controllers
 
             ViewBag.CanEdit = user == null ? true : false; // CanEdit sẽ là true nếu không có thông tin user.
             ViewBag.HoTen = user?.Nickname ?? string.Empty;
-            ViewBag.DiaChi = user?.Address ?? string.Empty;
+            ViewBag.DiaChi = HttpContext.Session.GetString("SelectedAddress");
             ViewBag.DienThoai = user?.PhoneNumber ?? string.Empty;
         }
         private long GetCustomerId()
         {
-            var customerIdString = HttpContext.User.Claims.SingleOrDefault(p => p.Type == MySetting.CLAIM_USERID)?.Value;
+            var customerIdString = HttpContext.Session.GetString("UserId");
             if (!long.TryParse(customerIdString, out long customerId))
             {
                 throw new Exception("Customer ID không hợp lệ.");
@@ -316,52 +316,72 @@ namespace Project1.Controllers
         }
         private void SaveOrderAndDetails(long customerId,string code, string note, int paymentMethodId, List<CartItem> cartItems, string customerName)
         {
-            long orderId = GenerateOrderId();
-            var hoadon = new TOrder
+            long voucherId = 0;
+            double? totalPrice = cartItems.Sum(p => p.ThanhTien);
+
+            if(long.TryParse(HttpContext.Session.GetString("VoucherId"), out long id))
             {
-                OrderId = orderId,
-                CustomerId = customerId,
-                Code = code,
-                Date = DateTime.Now,
-                Note = note,
-                TotalPrice = cartItems.Sum(p => p.ThanhTien),
-                PaymentMethodId = paymentMethodId,
-                StatusId = 1
-
-                /* Older version */
-                //for checkout (COD)
-                //DiaChi = model.DiaChi ?? khachHang.DiaChi,
-                //DienThoai = model.DienThoai ?? khachHang.DienThoai,
-
-                //for Vnpay PaymentCallBack
-                //DiaChi = diaChi ?? khachHang?.Address,
-                //DienThoai = dienThoai ?? khachHang?.PhoneNumber
-            };
-
-            db.Database.BeginTransaction();
-            try
-            {
-                db.Add(hoadon);
-                db.SaveChanges();
-
-                var cthds = cartItems.Select(item => new TOrderDetail
+                voucherId = id;
+                var voucher = db.TVouchers.SingleOrDefault(v => v.VoucherId == voucherId);
+                if(voucher != null)
                 {
-                    OrderId = hoadon.OrderId,
-                    ProductDetailId = item.ProductDetailId,
-                    Number = item.Quantity,
-                    Name = customerName // Dùng tên từ session hoặc nickname của khách hàng
-                }).ToList();
+                    var discountAmount = voucher.IsPercentDiscountType == true ? totalPrice * (voucher.DiscountValue / 100) : voucher.DiscountValue;
+                    discountAmount = discountAmount <= voucher.MaxDiscountValue ? discountAmount : voucher.MaxDiscountValue;
+                    totalPrice -= discountAmount;
 
-                db.AddRange(cthds);
-                db.SaveChanges();
-                db.Database.CommitTransaction();
+                    // Giảm số lượng voucher trừ đi 1
+                    if (voucher.Number > 0)
+                    {
+                        voucher.Number -= 1;
+                        db.TVouchers.Update(voucher);
+                        db.SaveChanges();
+                    }
+                }
             }
-            catch (Exception ex)
+
+            var address = HttpContext.Session.GetString("SelectedAddress");
+            if (address != null)
             {
-                db.Database.RollbackTransaction();
-                TempData["Message"] = $"Đã xảy ra lỗi khi lưu hóa đơn: {ex.Message}";
-                throw;
-            }
+                long orderId = GenerateOrderId();
+                var hoadon = new TOrder
+                {
+                    OrderId = orderId,
+                    CustomerId = customerId,
+                    Code = code,
+                    Date = DateTime.Now,
+                    Note = note,
+                    TotalPrice = totalPrice,
+                    PaymentMethodId = paymentMethodId,
+                    StatusId = 1,
+                    Address = address,
+                    VoucherId = voucherId != 0 ? voucherId : null
+                };
+
+                db.Database.BeginTransaction();
+                try
+                {
+                    db.Add(hoadon);
+                    db.SaveChanges();
+
+                    var cthds = cartItems.Select(item => new TOrderDetail
+                    {
+                        OrderId = hoadon.OrderId,
+                        ProductDetailId = item.ProductDetailId,
+                        Number = item.Quantity,
+                        Name = customerName // Dùng tên từ session hoặc nickname của khách hàng
+                    }).ToList();
+
+                    db.AddRange(cthds);
+                    db.SaveChanges();
+                    db.Database.CommitTransaction();
+                }
+                catch (Exception ex)
+                {
+                    db.Database.RollbackTransaction();
+                    TempData["Message"] = $"Đã xảy ra lỗi khi lưu hóa đơn: {ex.Message}";
+                    throw;
+                }
+            }          
         }
     }
 }
