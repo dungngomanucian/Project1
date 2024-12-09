@@ -1,0 +1,55 @@
+﻿@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
+@using Project1.Models
+@model List<TOrder>
+
+<br />
+<div class="row">
+    @foreach (var item in Model)
+    {
+        <div class="col-lg-3 grid-margin stretch-card">
+            <div class="card">
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-12 ma-don-hang">
+                            <h3>Mã đơn hàng: @item.OrderId</h3>
+                            <h5>Trạng thái: @item.Status.Name</h5>
+                        </div>
+                        <div class="col-12 image">
+                            <img class="logo" src="../../1LayoutIndex/logo_web.jpg" />
+                        </div>
+                    </div>
+                    <div class="row noi-dung-order">
+                        <div class="col-12">
+                            <small class="text-muted">
+                                Ngày đặt: @item.CreatedDate <br />
+                                Người tạo: @item.CreatedBy <br />
+                                Phương thức thanh toán: @item.PaymentMethodId <br />
+                                Tổng tiền: @item.TotalPrice
+                                
+                            </small>
+                        </div>
+                    </div>
+                    <div class="row">
+                        @if (item.Status.StatusId == 1 || item.Status.StatusId == 2)
+                        {
+                            <div class="col-6">
+                                <button type="button" class="btn btn-inverse-secondary btn-sm btn-detail" data-order-id="@item.OrderId">Xem chi tiết</button>
+                            </div>
+                            <div class="col-6">
+                                <button type="button" class="btn btn-inverse-secondary btn-sm btn-huy">
+                                    <a>Huỷ đơn</a>
+                                </button>
+                            </div>
+                        }
+                        else
+                        {
+                            <div class="col-12">
+                                <button type="button" class="btn btn-inverse-secondary btn-sm btn-detail" data-order-id="@item.OrderId">Xem chi tiết</button>
+                            </div>
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+</div>

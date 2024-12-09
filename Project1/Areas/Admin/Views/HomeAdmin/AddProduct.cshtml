@@ -1,77 +1,115 @@
 ﻿@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
-
-@model Project1.Models.TProduct
-
+@model Project1.Areas.Admin.ViewModels.Product_ProductDetail_ViewModel
 @{
     ViewData["Title"] = "AddProduct";
-    Layout = "~/Areas/Admin/Views/Shared/_LayoutAdmin.cshtml";
+    Layout = "~/Areas/Admin/Views/Shared/_LayoutAdmin1.cshtml";
 }
 
-<h1>Add a product</h1>
+<div class="content-wrapper" style="padding-left:40px;">
+    <div class="row">
+        <div class="col-6 grid-margin">
+            <div class="card">
+                <div class="card-body">
+                    <div class="card-title"> <h4>Thêm sản phẩm  </h4> </div>
 
-<hr />
-<div class="row">
-    <div class="col-md-4">
-        <form method="post" asp-action="AddProduct">
-            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-            <div class="form-group">
-                <label asp-for="CategoryId" class="control-label"></label>
-                <select asp-for="CategoryId" class="form-control" asp-items="ViewBag.Category"></select>
+                    
+                    <form class="form-sample" method="post" asp-action="AddProduct" enctype="multipart/form-data">
+                        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+                        <!-- Phân loại sản phẩm -->
+                        <div class="form-group row">
+                            <label asp-for="Product.CategoryId" class="col-sm-3 col-form-label">Phân loại:</label>
+                            <div class="col-sm-9">
+                                <select asp-for="Product.CategoryId" class="form-control" asp-items="ViewBag.Category"></select>
+                            </div>
+                        </div>
+
+                        <!-- Tên sản phẩm -->
+                        <div class="form-group row">
+                            <label asp-for="Product.Name" class="col-sm-3 col-form-label">Tên sản phẩm:</label>
+                            <div class="col-sm-6">
+                                <input asp-for="Product.Name" class="form-control" placeholder="Nhập tên sản phẩm tại đây" />
+                                <span asp-validation-for="Product.Name" class="text-danger"></span>
+                            </div>
+                        </div>
+
+                        <!-- Mô tả -->
+                        <div class="form-group row">
+                            <label asp-for="Product.Description" class="col-sm-3 col-form-label">Mô tả:</label>
+                            <div class="col-sm-9">
+                                <textarea asp-for="Product.Description" class="form-control" rows="4" placeholder="Mô tả tại đây"></textarea>
+                            </div>
+                        </div>
+
+                        <!-- Hình ảnh -->
+                        <div class="form-group row">
+                            <label asp-for="Image" class="col-sm-3 col-form-label">Chọn ảnh</label>
+                            <div class="col-sm-9">
+                                <input asp-for="Image" class="form-control" type="file" accept="image/*" />
+                                <span asp-validation-for="Image" class="text-danger"></span>
+                            </div>
+                        </div>
+
+                        <!-- Thông tin chi tiết sản phẩm -->
+                        <div class="card-title"> <h4>Chi tiết sản phẩm  </h4> </div>
+                     
+
+                        <!-- Kích cỡ -->
+                        <div class="form-group row">
+                            <label asp-for="ProductDetail.SizeId" class="col-sm-3 col-form-label">Kích cỡ:</label>
+                            <div class="col-sm-9">
+                                <select asp-for="ProductDetail.SizeId" class="form-control" asp-items="ViewBag.Sizes"></select>
+                            </div>
+                        </div>
+
+                        <!-- Loại crust -->
+                        <div class="form-group row">
+                            <label asp-for="ProductDetail.CrustId" class="col-sm-3 col-form-label">Loại crust:</label>
+                            <div class="col-sm-9">
+                                <select asp-for="ProductDetail.CrustId" class="form-control" asp-items="ViewBag.Crusts"></select>
+                            </div>
+                        </div>
+
+                        <!-- Giá -->
+                        <div class="form-group row">
+                            <label asp-for="ProductDetail.Price" class="col-sm-3 col-form-label">Giá:</label>
+                            <div class="col-sm-9">
+                                <input asp-for="ProductDetail.Price" class="form-control"  />
+                                <span asp-validation-for="ProductDetail.Price" class="text-danger"></span>
+                            </div>
+                        </div>
+
+                        <!-- Submit -->
+                        <div class="form-group">
+                            <input type="submit" value="Create" class="btn btn-primary" />
+                        </div>
+                    </form>
+                </div>
             </div>
-            <div class="form-group">
-                <label asp-for="ProductId" class="control-label"></label>
-                <input asp-for="ProductId" class="form-control" value="@ViewBag.NewProductId" readonly />
-                <span asp-validation-for="ProductId" class="text-danger" ></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="Image" class="control-label"></label>
-                <input asp-for="Image" class="form-control" />
-                <span asp-validation-for="Image" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="Description" class="control-label"></label>
-                <input asp-for="Description" class="form-control" />
-                <span asp-validation-for="Description" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="Name" class="control-label"></label>
-                <input asp-for="Name" class="form-control" />
-                <span asp-validation-for="Name" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="Deleted" class="control-label"></label>
-                <input asp-for="Deleted" class="form-control" value="@ViewBag.Deleted"/>
-                <span asp-validation-for="Deleted" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="CreatedBy" class="control-label"></label>
-                <input asp-for="CreatedBy" class="form-control"  readonly/>
-                <span asp-validation-for="CreatedBy" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="CreatedDate" class="control-label"></label>
-                <input asp-for="CreatedDate" class="form-control" readonly />
-                <span asp-validation-for="CreatedDate" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="LastModifiedBy" class="control-label"></label>
-                <input asp-for="LastModifiedBy" class="form-control"  readonly/>
-                <span asp-validation-for="LastModifiedBy" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="LastModifiedDate" class="control-label"></label>
-                <input asp-for="LastModifiedDate" class="form-control" readonly  />
-                <span asp-validation-for="LastModifiedDate" class="text-danger"></span>
-            </div>
-           
-            <div class="form-group">
-                <input type="submit" value="Create" class="btn btn-primary" />
-            </div>
-        </form>
+        </div>
+        
     </div>
 </div>
+
 
 <div>
     <a asp-action="ListProduct">Back to List</a>
 </div>
 
+<script>
+    //chọn ảnh
+    document.getElementById('imageInput').addEventListener('change', function () {
+        if (this.files && this.files[0]) {
+            console.log('File selected:', this.files[0].name);
+
+            var reader = new FileReader();
+            reader.onload = function (e) {
+                console.log('Image data URL:', e.target.result);
+                var output = document.getElementById('imagePreview');
+                output.src = e.target.result;
+                output.style.display = 'block';
+            };
+            reader.readAsDataURL(this.files[0]);
+        }
+    });
+</script>

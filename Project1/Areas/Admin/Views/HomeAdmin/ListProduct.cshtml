@@ -5,124 +5,183 @@
 
 @{
     ViewData["Title"] = "ListProduct";
-    Layout = "~/Areas/Admin/Views/Shared/_LayoutAdmin.cshtml";
+    Layout = "~/Areas/Admin/Views/Shared/_LayoutAdmin1.cshtml";
 }
 
-<h1>Product</h1>
+<div class="content-wrapper">
+    <div style="width: 100%; text-align: center;"> <h1>Sản phẩm</h1> </div>
+    <br />
+    <div class="row">
+        <div class="col-lg-8 ">
+            <button type="button" class="btn btn-inverse-secondary btn-fw btn-icon" style="transition: width 0.3s ease; overflow: hidden; white-space: nowrap; width: 50px;">
+                <a asp-action="AddProduct" style="color: inherit; text-decoration: none; display: flex; align-items: center; padding-left:15px">
+                    <i class="mdi mdi-hospital"></i>
+                    <span style="margin-left: 5px; visibility: hidden; transition: visibility 0.3s ease;"> Thêm sản phẩm mới</span>
+                </a>
+            </button>
+        </div>
+        <div class="col-lg-4">
+            <div class="input-group" style="margin-right: 10px; text-align: right;">
+                <div class="input-group-prepend">
+                    <span class="input-group-text" id="search">
+                        <i class="mdi mdi-magnify"></i>
+                    </span>
+                </div>
+                <input id="searchInput" type="text" class="form-control" placeholder="Tìm kiếm sản phẩm ở đây"
+                       aria-label="search" aria-describedby="search">
+                <button id="searchButton" type="button" class="btn btn-inverse-secondary btn-sm">Tìm kiếm</button>
+            </div>
+        </div>
 
-<p>
-    <a asp-action="AddProduct" >Create New</a>   
-</p>
-<div class="d-flex align-items-center mb-3">
-    <div class="me-2">
-        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" 
-        stroke-linecap="round" stroke-linejoin="round" class="feather feather-layers align-middle me-2">
-            <polygon points="12 2 2 7 12 12 22 7 12 2"></polygon>
-            <polyline points="2 17 12 22 22 17"></polyline>
-            <polyline points="2 12 12 17 22 12"></polyline>
-        </svg>
-        <span class="align-middle">Filter</span>
+        <div class="col-lg-12 grid-margin stretch-card">
+            <div class="card">
+                <div class="card-body">
+                    <div class="table-responsive pt-3">
+                        <table class="table table-striped ">
+                            <thead>
+                                <tr>
+                                    <th width="80px" height="10px" style="text-align: left; vertical-align: middle; padding-left: 10px; ">
+                                        Ảnh
+                                    </th>
+                                    <th width="80px" style="text-align: left; vertical-align: middle; padding-left: 10px; ">
+                                        Tên
+                                    </th>
+                                    <th width="80px" style="text-align: left; vertical-align: middle; padding-left: 10px; ">
+                                        Phân loại
+                                    </th>
+
+                                    <th width="180px" style="text-align: left; vertical-align: middle; padding-left: 10px;">
+                                        Mô tả
+                                    </th>
+
+                                    <th width="80px" style="text-align: left; vertical-align: middle; padding-left: 10px;">
+                                        Người tạo
+                                    </th>
+                                    <th width="80px" style="text-align: left; vertical-align: middle; padding-left: 10px;">
+                                        Ngày tạo
+                                    </th>
+                                    <th width="80px" style="text-align: left; vertical-align: middle; padding-left: 10px;">
+                                        Người sửa cuối
+                                    </th>
+                                    <th width="80px" style="text-align: left; vertical-align: middle; padding-left: 10px;">
+                                        Sửa lần cuối
+                                    </th>
+                                    <th width="80px" style="text-align: left; vertical-align: middle; padding-left: 10px; ">
+                                        Đã xoá
+                                    </th>
+                                    <th width="80px" style="text-align: left; vertical-align: middle; padding-left: 10px;">
+                                        Thao tác
+                                    </th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var item in Model)
+                                {
+                                    <tr>
+                                        <td>
+                                            <img src="../../ImagesProduct/@item.Image" alt="Ảnh sản phẩm" style="width: 100%; height: 100%; object-fit: cover;" />
+                                        </td>
+                                        <td>
+                                            @Html.DisplayFor(modelItem => item.Name)
+                                        </td>
+                                        <td>
+                                            @Html.DisplayFor(modelItem => item.Category.Name)
+                                        </td>
+                                        <td style=" line-height: 1.5;">
+                                            @Html.DisplayFor(modelItem => item.Description)
+                                        </td>
+                                        <td>
+                                            @Html.DisplayFor(modelItem => item.CreatedBy)
+                                        </td>
+                                        <td>
+                                            @Html.DisplayFor(modelItem => item.CreatedDate)
+                                        </td>
+                                        <td>
+                                            @Html.DisplayFor(modelItem => item.LastModifiedBy)
+                                        </td>
+                                        <td>
+                                            @Html.DisplayFor(modelItem => item.LastModifiedDate)
+                                        </td>
+                                        <td>
+                                            @Html.DisplayFor(modelItem => item.Deleted)
+                                        </td>
+
+
+                                        <td>
+                                            <a asp-action="UpdateProduct" asp-route-productId="@item.ProductId">Sửa</a> |
+
+                                            <a asp-action="DeleteProduct" asp-route-productId="@item.ProductId">Xoá</a>
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+        <div class=" col-12 mt-3 .pagination btn-group me-2 " role="group" aria-label="First group">
+            @Html.PagedListPager(Model,
+                     page => Url.Action("ListProduct", new { page = page }),
+                     new PagedListRenderOptions
+            {
+                UlElementClasses = new[] { "pagination" },
+                LiElementClasses = new[] { "page-item" },
+                PageClasses = new[] { "page-link", "btn", "btn-info" }
+            })
+
+        </div>
+
+
     </div>
-    <select class="form-select" onchange="redirectToCategory(this.value)">
-        <option value="" disabled selected>
-            Choose 1 product type
-        </option>
-        <option value="1">Pizza</option>
-        <option value="2">Món khai vị</option>
-        <option value="3">Món gà</option>
-        <option value="4">Combo</option>
-        <option value="5">Thức uống</option>
-    </select>
-</div>
-
-<table class="table">
-    <thead>
-        <tr>
-            <th>
-               Category
-            </th>
-            <th>
-                Name
-            </th>
-           
-            <th>
-                Description
-            </th>
-            <th>
-               Deleted
-            </th>
-            <th>
-                Created By
-            </th>
-            <th>
-               Created Date
-            </th>
-            <th>
-                Last Modified By
-            </th>
-            <th>
-                Last Modified Date
-            </th>
-           
-            <th></th>
-        </tr>
-    </thead>
-    <tbody>
-@foreach (var item in Model) {
-        <tr>
-            <td>
-                @Html.DisplayFor(modelItem => item.Category.Name)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Name)
-            </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.Description)
-                </td>
-            
-           
-            
-            <td>
-                @Html.DisplayFor(modelItem => item.Deleted)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.CreatedBy)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.CreatedDate)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.LastModifiedBy)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.LastModifiedDate)
-            </td>
-            
-            <td>
-                <a asp-action="UpdateProduct" asp-route-productId="@item.ProductId">Edit</a> |
-                <a asp-action="Details" asp-route-id="@item.ProductId">Details</a> |
-                <a asp-action="DeleteProduct" asp-route-productId="@item.ProductId">Delete</a>
-            </td>
-        </tr>
-}
-    </tbody>
-</table>
-<div class=".pagination btn-group me-2" role="group" aria-label="First group">
-    @Html.PagedListPager(Model,
-            page => Url.Action("ListProduct", new { page = page }),
-            new PagedListRenderOptions
+    @if (TempData["SuccessMessage"] != null)
     {
-        UlElementClasses = new[] { "pagination" },
-        LiElementClasses = new[] { "page-item" },
-        PageClasses = new[] { "page-link", "btn", "btn-info" }
-    })
-
+        <script>
+            toastr.success('@TempData["SuccessMessage"]');
+        </script>
+    }
 </div>
+
+
+
+
+
 <script>
-    function redirectToCategory(categoryId) {
-        if (categoryId) {
-            // Chuyển hướng đến action ListProductOptimizeByCategory với categoryId
-            window.location.href = '@Url.Action("ListProductOptimizeByCategory", "HomeAdmin")?categoryId=' + categoryId;
+    //mở rộng nút thêm mới
+    document.querySelector('.btn-icon').addEventListener('mouseover', function () {
+        this.style.width = '200px';
+        this.querySelector('span').style.visibility = 'visible';
+    });
+
+    document.querySelector('.btn-icon').addEventListener('mouseout', function () {
+        this.style.width = '50px';
+        this.querySelector('span').style.visibility = 'hidden';
+    });
+</script>
+
+
+<script>
+    // Hàm xử lý sự kiện tìm kiếm
+    function handleSearch() {
+        const searchKeyword = document.getElementById('searchInput').value.trim();
+        if (searchKeyword) {
+            const page = 1; // Mặc định trang đầu tiên
+            const url = `searchProduct?page=${page}&search_Keyword=${encodeURIComponent(searchKeyword)}`;
+            // Điều hướng đến action searchProduct
+            window.location.href = url;
+        } else {
+            alert("Vui lòng nhập từ khóa để tìm kiếm!");
         }
     }
+
+    // Xử lý sự kiện click nút "Tìm kiếm"
+    document.getElementById('searchButton').addEventListener('click', handleSearch);
+
+    // Xử lý sự kiện nhấn Enter trong ô input
+    document.getElementById('searchInput').addEventListener('keydown', function (e) {
+        if (e.key === 'Enter') {
+            handleSearch();
+        }
+    });
 </script>
