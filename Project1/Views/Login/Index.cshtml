@@ -10,15 +10,10 @@ data-sidebar-position="fixed" data-header-position="fixed">
     <div class="position-relative overflow-hidden radial-gradient min-vh-100 d-flex align-items-center justify-content-center">
         <div class="d-flex align-items-center justify-content-center w-100">
             <div class="row justify-content-center w-100">
-                @* <div class="col-md-6 col-lg-5 d-none d-md-flex align-items-center justify-content-center">
-                    <div class="card mb-0"> 
-                        <img style="" src="../1LayoutIndex/signuppic.png" alt="Alternate Text" />
-                    </div>
-                </div> *@
                 <div class="col-md-8 col-lg-5 col-xxl-5">
                     <div class="card mb-0">
                         <div class="card-body" style="padding: 20px">
-                            <a asp-controller="Welcome" asp-action="WelcomePage" class="text-nowrap logo-img text-center d-block py-3 w-100">
+                            <a class="text-nowrap logo-img text-center d-block py-3 w-100">
                                 <img src="../1LayoutLogin/assets/images/logos/dark-logo.svg" width="180" alt="" style="border-radius: 50%">
                             </a>
                             @using (Html.BeginForm("Index", "Login", FormMethod.Post, new { id = "loginForm" }))
