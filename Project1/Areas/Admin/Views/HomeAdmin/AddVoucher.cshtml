@@ -1,0 +1,171 @@
+﻿@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
+@using Project1.Models
+@model TOrder
+@{
+    ViewData["Title"] = "AddProduct";
+    Layout = "~/Areas/Admin/Views/Shared/_LayoutAdmin1.cshtml";
+}
+
+
+<div class="content-wrapper" style="padding-left:40px;">
+    <div class="row">
+        <div class="col-9 grid-margin">
+            <div class="card">
+                <div class="card-body">
+                    <div class="card-title"> <h4>Thêm Voucher  </h4> </div>
+
+                    <form class="form-sample" method="post" asp-action="AddVoucher" enctype="multipart/form-data">
+                        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+                        <!-- Loại voucher -->
+                        <div class="form-group row">
+                            <label asp-for="Voucher.IsPercentDiscountType" class="col-sm-3 col-form-label">Là dạng giảm theo %:</label>
+                            <div class="col-sm-9">
+                                <select asp-for="Voucher.IsPercentDiscountType" class="form-control" id="isPercentType" onchange="handlePercentTypeChange()">
+                                    <option value="true">Yes</option>
+                                    <option value="false">No</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <!-- Code voucher -->
+                        <div class="form-group row">
+                            <label asp-for="Voucher.Code" class="col-sm-3 col-form-label">Code voucher:</label>
+                            <div class="col-sm-6">
+                                <input asp-for="Voucher.Code" class="form-control" placeholder="Nhập code voucher tại đây" />
+                                <span asp-validation-for="Voucher.Code" class="text-danger"></span>
+                            </div>
+                        </div>
+
+                        <!-- Số lượng -->
+                        <div class="form-group row">
+                            <label asp-for="Voucher.Number" class="col-sm-3 col-form-label">Số lượng voucher:</label>
+                            <div class="col-sm-6">
+                                <input asp-for="Voucher.Number" class="form-control" placeholder="Nhập sl voucher tại đây" />
+                                <span asp-validation-for="Voucher.Number" class="text-danger"></span>
+                            </div>
+                        </div>
+
+                        <!-- Giá trị đơn tối thiểu để áp dụng -->
+                        <div class="form-group row">
+                            <label asp-for="Voucher.MinOrderValue" class="col-sm-3 col-form-label">Giá trị đơn tối thiểu để áp dụng:</label>
+                            <div class="col-sm-6">
+                                <input asp-for="Voucher.MinOrderValue" class="form-control" placeholder="Nhập giá trị tối thiểu tại đây" />
+                                <span asp-validation-for="Voucher.MinOrderValue" class="text-danger"></span>
+                            </div>
+                        </div>
+
+                       
+                        <!-- Giá trị giảm -->
+                        <div class="form-group row">
+                            <label asp-for="Voucher.DiscountValue" class="col-sm-3 col-form-label">Giảm:</label>
+                            <div class="col-sm-6">
+                                <input asp-for="Voucher.DiscountValue" class="form-control" id="discountValue" onblur="validateDiscountValue()" placeholder="Nhập phần trăm giảm đây" />
+                                <span asp-validation-for="Voucher.DiscountValue" class="text-danger"></span>
+                            </div>
+                        </div>
+                        
+
+                        <!-- Giảm tối đa  -->
+                        <div class="form-group row">
+                            <label asp-for="Voucher.MaxDiscountValue" class="col-sm-3 col-form-label">Giá trị giảm tối đa:</label>
+                            <div class="col-sm-6">
+                                <input asp-for="Voucher.MaxDiscountValue" class="form-control" placeholder="Nhập giá trị tối thiểu tại đây" />
+                                <span asp-validation-for="Voucher.MaxDiscountValue" class="text-danger"></span>
+                            </div>
+                        </div>
+
+                        <!-- Ngày bắt đầu  -->
+                        <div class="form-group row">
+                            <label asp-for="Voucher.StartDate" class="col-sm-3 col-form-label">Ngày bắt đầu:</label>
+                            <div class="col-sm-6">
+                                <input asp-for="Voucher.StartDate" class="form-control" type="datetime-local" placeholder="Nhập giá trị tối thiểu tại đây" />
+                                <span asp-validation-for="Voucher.StartDate" class="text-danger"></span>
+                            </div>
+                        </div>
+
+                        <!-- Ngày kết thúc  -->
+                        <div class="form-group row">
+                            <label asp-for="Voucher.ExpirationDate" class="col-sm-3 col-form-label">Ngày kết thúc:</label>
+                            <div class="col-sm-6">
+                                <input asp-for="Voucher.ExpirationDate" class="form-control" type="datetime-local" placeholder="Nhập giá trị tối thiểu tại đây" />
+                                <span asp-validation-for="Voucher.ExpirationDate" class="text-danger"></span>
+                            </div>
+                        </div>
+
+                        <!-- Apply Condition -->
+                        <div class="form-group row">
+                            <label asp-for="Voucher.ApplyCondition" class="col-sm-3 col-form-label">Điều kiện áp dụng:</label>
+                            <div class="col-sm-9">
+                                <textarea asp-for="Voucher.ApplyCondition" class="form-control" rows="4" placeholder="Nhập điều kiện áp dụng tại đây"></textarea>
+                            </div>
+                        </div>
+
+                        <!-- Submit -->
+                        <div class="form-group">
+                            <input type="submit" value="Create" class="btn btn-primary" />
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+
+<div>
+    <a asp-action="ListVoucher" asp-route-state="1">Back to Voucher hiện hành</a>
+</div>
+
+<script>
+    function handlePercentTypeChange() {
+        const isPercentType = document.getElementById("isPercentType").value;
+        const discountValue = document.getElementById("discountValue");
+
+        if (isPercentType === "true") { // Nếu chọn Yes (giảm %)
+            discountValue.type = "number";
+            discountValue.min = "1";
+            discountValue.max = "100";
+            discountValue.placeholder = "Nhập phần trăm giảm (1-100)";
+            discountValue.value = ""; // Reset giá trị
+        } else { // Nếu chọn No (giảm số tiền)
+            discountValue.type = "number";
+            discountValue.removeAttribute("min");
+            discountValue.removeAttribute("max");
+            discountValue.placeholder = "Nhập số tiền giảm";
+            discountValue.value = ""; // Reset giá trị
+        }
+    }
+
+    // Gọi hàm khi trang được tải để thiết lập mặc định
+    document.addEventListener("DOMContentLoaded", handlePercentTypeChange);
+</script>
+
+<script>
+    function validateDiscountValue() {
+        const isPercentType = document.getElementById("isPercentType").value; // Lấy giá trị yes/no
+        const discountValue = document.getElementById("discountValue"); // Trường giảm
+        const value = parseFloat(discountValue.value); // Lấy giá trị người dùng nhập vào
+
+        // Cờ kiểm soát đã hiển thị thông báo
+        let isValid = true;
+
+        if (isPercentType === "true") { // Nếu là giảm theo %
+            if (isNaN(value) || value < 1 || value > 100) { // Giá trị không hợp lệ
+                alert("Giá trị giảm theo % phải nằm trong khoảng từ 1 đến 100.");
+                isValid = false;
+            }
+        } else { // Nếu là giảm theo số tiền
+            if (isNaN(value) || value < 1) { // Giá trị không hợp lệ
+                alert("Giá trị giảm theo số tiền phải là số tự nhiên lớn hơn 0.");
+                isValid = false;
+            }
+        }
+
+        if (!isValid) {
+            discountValue.value = ""; // Reset giá trị không hợp lệ
+            setTimeout(() => discountValue.focus(), 0); // Đặt lại focus với độ trễ nhỏ để tránh lặp
+        }
+    }
+</script>
