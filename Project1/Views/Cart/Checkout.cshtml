@@ -197,35 +197,6 @@
         }
     </div>
 
-    <div class="container">
-        <h2>Trạng Thái Đơn Hàng Pizza</h2>
-
-        <div class="order-status">
-            <ul class="status-steps">
-                <li class="status-step active" data-status="pending">
-                    <span class="step-number"><i class="fas fa-hourglass-half"></i></span>
-                    <span class="step-label">Đang xác nhận</span>
-                </li>
-                <li class="status-step completed" data-status="confirmed">
-                    <span class="step-number"><i class="fas fa-check-circle"></i></span>
-                    <span class="step-label">Đã xác nhận</span>
-                </li>
-                <li class="status-step completed" data-status="preparing">
-                    <span class="step-number"><i class="fas fa-cogs"></i></span>
-                    <span class="step-label">Đang chuẩn bị hàng</span>
-                </li>
-                <li class="status-step" data-status="shipping">
-                    <span class="step-number"><i class="fas fa-truck"></i></span>
-                    <span class="step-label">Đang vận chuyển</span>
-                </li>
-                <li class="status-step last-step" data-status="delivered">
-                    <span class="step-number"><i class="fas fa-box-open"></i></span>
-                    <span class="step-label">Giao hàng thành công</span>
-                </li>
-            </ul>
-        </div>
-    </div>
-
     <!-- Thêm FontAwesome vào cuối trang -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/js/all.min.js"></script>
 </body>
@@ -264,7 +235,37 @@
                                     </tr>
                                 }
                             </tbody>
+
+                            
                         </table>
+                        <div class="row mt-3">
+                            <div class="col-6">
+                                
+                            </div>
+
+                            <div class="col-6">
+                                <div class="row">
+                                    <div class="col-lg-4 col-md-12 col-sm-12 mb-3">
+                                        <div class="text-end text-muted m-0">Tổng tiền</div>
+                                        <div id="total-price" class="text-end fw-bold" data-total-price="@Model.Sum(p => p.ThanhTien)">
+                                            @(Model.Sum(p => p.ThanhTien) > 0 ? String.Format("{0:0,0 \u20AB}", Model.Sum(p => p.ThanhTien)).Replace(",", ".") : "0 \u20AB")
+                                        </div>
+                                    </div>
+                                    <div class="col-lg-4 col-md-12 col-sm-12 mb-3">
+                                        <div class="text-end text-muted m-0">Giảm khuyến mại</div>
+                                        <div id="discount-value" class="text-end fw-bold">
+                                            @(ViewBag.DiscountAmount > 0 ? String.Format("{0:0,0 \u20AB}", ViewBag.DiscountAmount).Replace(",", ".") : "0 \u20AB")
+                                        </div>
+                                    </div>
+                                    <div class="col-lg-4 col-md-12 col-sm-12 mb-3">
+                                        <div class="text-end text-muted m-0">Tổng thanh toán</div>
+                                        <div id="final-price" class="text-end fw-bold">
+                                            @(ViewBag.FinalPrice > 0 ? String.Format("{0:0,0 \u20AB}", ViewBag.FinalPrice).Replace(",", ".") : "0 \u20AB")
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
