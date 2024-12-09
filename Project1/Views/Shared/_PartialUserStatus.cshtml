@@ -2,7 +2,7 @@
     @if (Context.Session.GetString("UserId") != null || Context.Session.GetString("Email") != null)
     {
         <li>
-            <a asp-controller="Order" asp-action="Status" class="dropdown-item">
+            <a asp-controller="Order" asp-action="Index" class="dropdown-item">
                 <i class="fas fa-box me-2"></i> Trạng thái đơn hàng
             </a>
         </li>
