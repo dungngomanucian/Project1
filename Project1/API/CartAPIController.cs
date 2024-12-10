@@ -30,17 +30,19 @@ namespace Project1.API
                     message = "Hãy nhập địa chỉ giao hàng!"
                 });
             }
+
+            var productDetail = db.TProductDetails.SingleOrDefault(p => p.ProductDetailId == productDetailId);
+            if (productDetail == null)
+            {
+                return BadRequest(new
+                {
+                    success = false,
+                    message = $"Không tìm thấy sản phẩm có mã {productDetailId}"
+                });
+            }
+
             if (item == null)
             {
-                var productDetail = db.TProductDetails.SingleOrDefault(p => p.ProductDetailId == productDetailId);
-                if (productDetail == null)
-                {
-                    return BadRequest(new
-                    {
-                        success = false,
-                        message = $"Không tìm thấy sản phẩm có mã {productDetailId}"
-                    });
-                }
                 var product = db.TProducts.SingleOrDefault(p => p.ProductId == productDetail.ProductId);
                 if (product != null)
                 {
@@ -60,6 +62,14 @@ namespace Project1.API
             }
             else
             {
+                if ((quantity + item.Quantity) > productDetail.Number)
+                {
+                    return Ok(new
+                    {
+                        success = false,
+                        message = $"Chỉ còn lại {productDetail.Number} sản phẩm này tại cửa hàng"
+                    });
+                }
                 item.Quantity += quantity;
             }
 

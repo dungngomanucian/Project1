@@ -19,7 +19,8 @@ namespace Project1.API
                 ProductDetailId = pd.ProductDetailId,
                 Price = pd.Price,
                 CrustId = pd.CrustId,
-                SizeId = pd.SizeId
+                SizeId = pd.SizeId,
+                Number = pd.Number
             }).ToList();
 
             if (!productDetails.Any())
