@@ -126,7 +126,8 @@ namespace Project1.Controllers
                     model.HoTen ?? khachHang?.Nickname ?? ""
                 );
 
-                HttpContext.Session.Set<List<CartItem>>(MySetting.CART_KEY, new List<CartItem>());
+                HttpContext.Session.Remove(MySetting.CART_KEY);
+                HttpContext.Session.Remove("VoucherId");
 
                 return View("Success");
             }
@@ -170,7 +171,8 @@ namespace Project1.Controllers
             );
 
             // Xóa giỏ hàng khỏi session
-            HttpContext.Session.Set<List<CartItem>>(MySetting.CART_KEY, new List<CartItem>());
+            HttpContext.Session.Remove(MySetting.CART_KEY);
+            HttpContext.Session.Remove("VoucherId");
 
             TempData["Message"] = "Thanh toán VNPay thành công.";
             return RedirectToAction("PaymentSuccess");
@@ -256,7 +258,8 @@ namespace Project1.Controllers
                     string.IsNullOrEmpty(hoTen) ? khachHang?.Nickname : hoTen // Nếu không có tên từ session, dùng tên nickname
                 );
 
-                HttpContext.Session.Set<List<CartItem>>(MySetting.CART_KEY, new List<CartItem>());
+                HttpContext.Session.Remove(MySetting.CART_KEY);
+                HttpContext.Session.Remove("VoucherId");
                 TempData["Message"] = "Thanh toán PayPal thành công.";
                 return RedirectToAction("PaymentSuccess");
             }
