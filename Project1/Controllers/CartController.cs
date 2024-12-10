@@ -83,6 +83,16 @@ namespace Project1.Controllers
             PrepareCheckoutViewBag(customerId);
 
             ViewBag.PaypalClientId = _paypalClient.ClientId;
+
+            double? totalPrice = Cart.Sum(p => p.ThanhTien);
+            
+            var (voucherId, voucherCode, discountAmount, finalPrice) = HandleVoucher(totalPrice);
+
+            ViewBag.TotalPrice = totalPrice;
+            ViewBag.VoucherCode = voucherCode;
+            ViewBag.DiscountAmount = discountAmount;
+            ViewBag.FinalPrice = finalPrice;
+
             return View(Cart);
         }
 
@@ -144,7 +154,7 @@ namespace Project1.Controllers
             // lay thong tin user
             long customerId = GetCustomerId();
 
-            PrepareCheckoutViewBag(customerId);
+            //PrepareCheckoutViewBag(customerId);
 
             var khachHang = db.TUsers.SingleOrDefault(kh => kh.UserId == customerId);
             string code = GenerateOrderId().ToString();
@@ -173,7 +183,10 @@ namespace Project1.Controllers
         {
 
             // Thông tin đơn hàng gửi qua Paypal
-            double tongTienVND = Cart.Sum(p => p.ThanhTien) ?? 0;
+            double? totalPrice = Cart.Sum(p => p.ThanhTien);
+            var (voucherId, voucherCode, discountAmount, finalPrice) = HandleVoucher(totalPrice);
+
+            double tongTienVND = finalPrice ?? 0;
             if (tongTienVND <= 0)
             {
                 return BadRequest(new { Message = "Tổng tiền không hợp lệ" });
@@ -304,9 +317,12 @@ namespace Project1.Controllers
             HttpContext.Session.SetString("DienThoai", model.DienThoai ?? "");
             HttpContext.Session.SetString("GhiChu", model.GhiChu ?? "");  // neu null -> ""
 
+            double? totalPrice = Cart.Sum(p => p.ThanhTien);
+            var (voucherId, voucherCode, discountAmount, finalPrice) = HandleVoucher(totalPrice);
+
             var vnPayModel = new VnPaymentRequestModel
             {
-                Amount = Cart.Sum(p => p.ThanhTien),
+                Amount = finalPrice,
                 CreatedDate = DateTime.Now,
                 Description = $"{model.HoTen} {model.DienThoai}",
                 FullName = model.HoTen,
@@ -316,26 +332,19 @@ namespace Project1.Controllers
         }
         private void SaveOrderAndDetails(long customerId,string code, string note, int paymentMethodId, List<CartItem> cartItems, string customerName)
         {
-            long voucherId = 0;
             double? totalPrice = cartItems.Sum(p => p.ThanhTien);
+            var (voucherId, voucherCode, discountAmount, finalPrice) = HandleVoucher(totalPrice);
+            totalPrice = finalPrice;
 
-            if(long.TryParse(HttpContext.Session.GetString("VoucherId"), out long id))
+            // Cập nhật lại số lượng voucher
+            if (voucherId != 0)
             {
-                voucherId = id;
                 var voucher = db.TVouchers.SingleOrDefault(v => v.VoucherId == voucherId);
-                if(voucher != null)
+                if (voucher != null)
                 {
-                    var discountAmount = voucher.IsPercentDiscountType == true ? totalPrice * (voucher.DiscountValue / 100) : voucher.DiscountValue;
-                    discountAmount = discountAmount <= voucher.MaxDiscountValue ? discountAmount : voucher.MaxDiscountValue;
-                    totalPrice -= discountAmount;
-
-                    // Giảm số lượng voucher trừ đi 1
-                    if (voucher.Number > 0)
-                    {
-                        voucher.Number -= 1;
-                        db.TVouchers.Update(voucher);
-                        db.SaveChanges();
-                    }
+                    voucher.Number -= 1; // Giảm số lượng voucher đi 1
+                    db.TVouchers.Update(voucher);
+                    db.SaveChanges();
                 }
             }
 
@@ -383,5 +392,34 @@ namespace Project1.Controllers
                 }
             }          
         }
+
+        private (long VoucherId, string VoucherCode, double? DiscountAmount, double? FinalPrice) HandleVoucher(double? totalPrice)
+        {
+            string voucherCode = "";
+            double? discountAmount = 0;
+
+            if (long.TryParse(HttpContext.Session.GetString("VoucherId"), out long voucherId))
+            {
+                var voucher = db.TVouchers.SingleOrDefault(v => v.VoucherId == voucherId);
+                if (voucher != null)
+                {
+                    discountAmount = voucher.IsPercentDiscountType == true ? totalPrice * (voucher.DiscountValue / 100) : voucher.DiscountValue;
+                    discountAmount = discountAmount <= voucher.MaxDiscountValue ? discountAmount : voucher.MaxDiscountValue;
+                    totalPrice -= discountAmount;
+
+                    if (voucher.Number > 0)
+                    {
+                        voucher.Number -= 1;
+                        db.TVouchers.Update(voucher);
+                        db.SaveChanges();
+                    }
+
+                    voucherCode = voucher.Code;
+                }
+            }
+
+            return (voucherId, voucherCode, discountAmount, totalPrice);
+        }
+
     }
 }
