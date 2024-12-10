@@ -16,6 +16,12 @@ namespace Project1.Controllers
         private PizzaOnlineContext db = new PizzaOnlineContext();
         public IActionResult Index(int ?page)
         {
+            // Lấy địa chỉ từ Session
+            var selectedAddress = HttpContext.Session.GetString("SelectedAddress");
+
+            // Truyền giá trị vào ViewBag để hiển thị trong view nếu cần
+            ViewBag.SelectedAddress = selectedAddress;
+
             int pageSize = 6;
             int pageNumber = page == null || page < 0 ? 1 : page.Value;
             if (!long.TryParse(HttpContext.Session.GetString("UserId"), out long userId))
@@ -34,6 +40,12 @@ namespace Project1.Controllers
 
         public IActionResult OrderDetail(long? orderId)
         {
+            // Lấy địa chỉ từ Session
+            var selectedAddress = HttpContext.Session.GetString("SelectedAddress");
+
+            // Truyền giá trị vào ViewBag để hiển thị trong view nếu cần
+            ViewBag.SelectedAddress = selectedAddress;
+
             var order = db.TOrders
                 .Include(o => o.Customer)
                 .Include(o => o.PaymentMethod)

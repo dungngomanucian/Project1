@@ -30,6 +30,12 @@ namespace Project1.Controllers
 
 		public IActionResult Index()
         {
+            // Lấy địa chỉ từ Session
+            var selectedAddress = HttpContext.Session.GetString("SelectedAddress");
+
+            // Truyền giá trị vào ViewBag để hiển thị trong view nếu cần
+            ViewBag.SelectedAddress = selectedAddress;
+
             ViewBag.Vouchers = db.TVouchers.ToList();
             ViewBag.DiscountAmount = 0;
             ViewBag.VoucherCode = "";
@@ -60,13 +66,6 @@ namespace Project1.Controllers
                 }
             }
             ViewBag.FinalPrice = totalPrice;  
-            
-
-            // Lấy địa chỉ từ Session
-            var selectedAddress = HttpContext.Session.GetString("SelectedAddress");
-
-            // Truyền giá trị vào ViewBag để hiển thị trong view nếu cần
-            ViewBag.SelectedAddress = selectedAddress;
 
             return View(Cart);
         }
@@ -75,10 +74,10 @@ namespace Project1.Controllers
         [HttpGet]
         public IActionResult Checkout()
         {
-            //if (Cart.Count == 0)
-            //{
-            //    return Redirect("/");
-            //}
+            if (Cart.Count == 0)
+            {
+                return Redirect("/Menu/Index");
+            }
             long customerId = GetCustomerId();
             PrepareCheckoutViewBag(customerId);
 
@@ -129,7 +128,7 @@ namespace Project1.Controllers
                 HttpContext.Session.Remove(MySetting.CART_KEY);
                 HttpContext.Session.Remove("VoucherId");
 
-                return View("Success");
+                return RedirectToAction("Index", "Order");
             }
             return View(Cart);
         }
@@ -175,7 +174,7 @@ namespace Project1.Controllers
             HttpContext.Session.Remove("VoucherId");
 
             TempData["Message"] = "Thanh toán VNPay thành công.";
-            return RedirectToAction("PaymentSuccess");
+            return RedirectToAction("Index", "Order");
         }
 
         #region Paypal payment
@@ -275,7 +274,7 @@ namespace Project1.Controllers
         [Authorize]
         public IActionResult PaymentSuccess()
         {
-            return View("Success");
+            return RedirectToAction("Index", "Order");
         }
 
         [Authorize]
