@@ -86,7 +86,7 @@
                         </a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" asp-area="Admin" asp-controller="HomeAdmin" asp-action="ListProduct">
+                        <a class="nav-link" asp-area="Admin" asp-controller="ManageProduct" asp-action="ListProduct">
                             <i class="mdi mdi-apps menu-icon"></i>
                             <span class="menu-title">Quản lý sản phẩm </span>
                         </a>
@@ -99,8 +99,8 @@
                         </a>
                         <div class="collapse" id="ui-basic" style="">
                             <ul class="nav flex-column sub-menu">
-                                <li class="nav-item" ><a class="nav-link" asp-area="Admin" asp-controller="HomeAdmin" asp-action="ListUnAcceptOrder"><i class="mdi mdi-new-box menu-icon"></i>Đơn hàng mới</a></li>
-                                <li class="nav-item" > <a class="nav-link" asp-area="Admin" asp-controller="HomeAdmin" asp-action="ListOldOrder"><i class="mdi mdi-folder menu-icon"></i>Đơn hàng cũ</a></li>
+                                <li class="nav-item"><a class="nav-link" asp-area="Admin" asp-controller="ManageOrder" asp-action="ListUnAcceptOrder"><i class="mdi mdi-new-box menu-icon"></i>Đơn hàng mới</a></li>
+                                <li class="nav-item"> <a class="nav-link" asp-area="Admin" asp-controller="ManageOrder" asp-action="ListOldOrder"><i class="mdi mdi-folder menu-icon"></i>Đơn hàng cũ</a></li>
                             </ul>
                         </div>
                     </li>
@@ -112,9 +112,9 @@
                         </a>
                         <div class="collapse" id="autho" style="">
                             <ul class="nav flex-column sub-menu" >
-                                <li class="nav-item"> <a class="nav-link" asp-area="Admin" asp-controller="HomeAdmin" asp-action="AddVoucher"><i class="mdi mdi-bookmark-plus-outline menu-icon"></i>Thêm voucher mới</a></li>
-                                <li class="nav-item"> <a class="nav-link" asp-area="Admin" asp-controller="HomeAdmin" asp-action="ListVoucher" asp-route-state="1"><i class="mdi mdi-swap-vertical menu-icon"></i>Voucher hiện hành</a></li>
-                                <li class="nav-item"> <a class="nav-link" asp-area="Admin" asp-controller="HomeAdmin" asp-action="ListVoucher" asp-route-state="2"><i class="mdi mdi-sync-off menu-icon"></i>Voucher vô hiệu hoá</a></li>
+                                <li class="nav-item"> <a class="nav-link" asp-area="Admin" asp-controller="ManageVoucher" asp-action="AddVoucher"><i class="mdi mdi-bookmark-plus-outline menu-icon"></i>Thêm voucher mới</a></li>
+                                <li class="nav-item"> <a class="nav-link" asp-area="Admin" asp-controller="ManageVoucher" asp-action="ListVoucher" asp-route-state="1"><i class="mdi mdi-swap-vertical menu-icon"></i>Voucher hiện hành</a></li>
+                                <li class="nav-item"> <a class="nav-link" asp-area="Admin" asp-controller="ManageVoucher" asp-action="ListVoucher" asp-route-state="2"><i class="mdi mdi-sync-off menu-icon"></i>Voucher vô hiệu hoá</a></li>
                             </ul>
                         </div>
                     </li>

@@ -36,8 +36,8 @@
                                 <button type="button" class="btn btn-inverse-secondary btn-sm btn-detail" data-order-id="@item.OrderId">Xem chi tiết</button>
                             </div>
                             <div class="col-6">
-                                <button type="button" class="btn btn-inverse-secondary btn-sm btn-huy">
-                                    <a>Huỷ đơn</a>
+                                <button type="button" class="btn btn-inverse-secondary btn-sm btn-huy" onclick="confirmCancel(@item.OrderId)">
+                                    Huỷ đơn
                                 </button>
                             </div>
                         }
@@ -53,3 +53,13 @@
         </div>
     }
 </div>
+<script>
+    function confirmCancel(orderId) {
+        // Hiển thị hộp thoại xác nhận
+        if (confirm("Bạn có chắc chắn muốn hủy đơn hàng này không?")) {
+            // Chuyển hướng đến action hủy đơn nếu người dùng xác nhận
+            window.location.href = `CancelOrder?orderId=${orderId}`;
+        }
+    }
+
+</script>
