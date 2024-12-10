@@ -39,7 +39,7 @@ var connectionString = builder.Configuration.GetConnectionString("PizzaOnlineCon
 builder.Services.AddDbContext<PizzaOnlineContext>(x=>x.UseSqlServer(connectionString));
 builder.Services.AddScoped<EmailService>();
 builder.Services.AddScoped<IMenuRepository, MenuRepository>();
-
+builder.Services.AddHttpContextAccessor();
 //Thêm Session
 //Begin
 builder.Services.AddSession(options =>

@@ -1,0 +1,209 @@
+﻿@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
+@using Project1.Models;
+@model List<TVoucher>
+@{
+    ViewData["Title"] = "ListProduct";
+    Layout = "~/Areas/Admin/Views/Shared/_LayoutAdmin1.cshtml";
+}
+
+<br />
+
+<div class="content-wrapper">
+    <div class="row">
+        @if (ViewBag.Null == "List thành công")
+        {
+            <h3 class="tilte_voucher">--------------------------Voucher giảm giá cố định--------------------------</h3>
+        }
+        else if (ViewBag.Null == "Không có voucher nào bị hết hạn hoặc hết số lượng")
+        {
+            <div class="alert alert-warning r">
+                @ViewBag.Null
+            </div>
+        }
+
+        
+        <div class="row">
+            @foreach (var item in Model)
+            {
+                @if (item.IsPercentDiscountType == false)
+                {
+                    <div class="col-lg-3 grid-margin stretch-card">
+                        <div class="card">
+                            <div class="card-body">
+                                <div class="row">
+                                    <div class="col-12 ma-don-hang">
+                                        <h3>Mã Voucher: @item.VoucherId</h3>
+                                        <h5>Trạng thái: @item.Code</h5>
+                                    </div>
+                                    <div class="col-12 image">
+                                        <img class="logo" src="../../1LayoutIndex/logo_web.jpg" />
+                                    </div>
+                                </div>
+                                <div class="row noi-dung-order">
+                                    <div class="col-12">
+                                        <small class="text-muted">
+                                            Số lượng: @item.Number <br />
+                                            Giá trị tối thiểu để áp dụng: @item.MinOrderValue <br />
+                                            Giảm: @item.DiscountValue <br />
+                                            Giảm tối đa: @item.MaxDiscountValue
+                                        </small>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    @if (item.Deleted == false)
+                                    {
+                                        <button type="button" class="btn btn-inverse-secondary btn-sm btn-vohieu">
+                                            <a>Vô hiệu hoá voucher này</a>
+                                        </button>
+                                    }
+                                    else
+                                    {
+                                        <button type="button" class="btn btn-inverse-secondary btn-sm btn-vohieu">
+                                            <a>Hồi sinh voucher này</a>
+                                        </button>
+                                    }
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                }
+            }
+        </div>
+    </div>
+    <br />
+    <br />
+    <br />
+    <br />
+    <br />
+    <br />
+    <div class="row">
+        @if (ViewBag.Null == "List thành công")
+        {
+
+            <h3 class="tilte_voucher">--------------------------Voucher giảm giá theo phần trăm--------------------------</h3>
+        }
+        else if (ViewBag.Null == "Không có voucher nào bị hết hạn hoặc hết số lượng")
+        {
+            
+        }
+        <div class="row">          
+            @foreach (var item in Model)
+            {
+                @if (item.IsPercentDiscountType == true)
+                {
+                    <div class="col-lg-3 grid-margin stretch-card">
+                        <div class="card">
+                            <div class="card-body">
+                                <div class="row">
+                                    <div class="col-12 ma-don-hang">
+                                        <h3>Mã Voucher: @item.VoucherId</h3>
+                                        <h5>Trạng thái: @item.Code</h5>
+                                    </div>
+                                    <div class="col-12 image">
+                                        <img class="logo" src="../../1LayoutIndex/logo_web.jpg" />
+                                    </div>
+                                </div>
+                                <div class="row noi-dung-order">
+                                    <div class="col-12">
+                                        <small class="text-muted">
+                                            Số lượng: @item.Number <br />
+                                            Giá trị tối thiểu để áp dụng: @item.MinOrderValue <br />
+                                            Giảm: @item.DiscountValue <br />
+                                            Giảm tối đa: @item.MaxDiscountValue
+                                        </small>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    @if (item.Deleted == false)
+                                    {                                        
+                                        <button type="button" class="btn btn-inverse-secondary btn-sm btn-vohieu">
+                                            <a>Vô hiệu hoá voucher này</a>
+                                        </button>
+                                    }
+                                    else
+                                    {
+                                        <button type="button" class="btn btn-inverse-secondary btn-sm btn-vohieu">
+                                            <a>Hồi sinh voucher này</a>
+                                        </button>
+                                    }
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                }
+            }
+        </div>
+    </div>
+</div>
+
+
+<style>
+    .card {
+        width: 80%;
+        text-align: center;
+        margin: 0 auto
+    }
+
+    .row1 {
+        width: 100%;
+        text-align: center;
+        margin: 0 auto;
+    }
+
+    .col-3 {
+        padding: 10px;
+        border-radius: 5px 5px 5px 5px;
+    }
+
+    .nav-status-container {
+        padding: 0px;
+    }
+
+    .col-3:last-child {
+        border-right: none;
+    }
+
+    .ma-don-hang {
+        margin: auto 0;
+        text-align: center;
+    }
+
+    .image {
+        margin: auto 0;
+        padding-left: 0px;
+    }
+
+    .logo {
+        width: 60%;
+        height: 60%;
+        object-fit: cover;
+    }
+
+    .noi-dung-order {
+        text-align: center;
+        margin: auto 0;
+    }
+
+    .btn-vohieu {
+        align-items:center;
+        text-align:center;
+        width: 100%;
+        height: 100%;
+        margin: 0 auto;
+    }
+
+    .btn-detail {
+        width: 100%;
+        height: 100%;
+        margin: 0 auto;
+    }
+
+    .col-12 {
+        margin-bottom: 10px;
+    }
+
+    .tilte_voucher{
+        margin:0 auto;
+        padding-bottom:10px;
+    }
+</style>

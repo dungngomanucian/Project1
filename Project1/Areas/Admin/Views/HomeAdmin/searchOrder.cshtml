@@ -67,6 +67,7 @@
                                 </tr>
                             </thead>
                             <tbody>
+                                
                                 @foreach (var item in Model)
                                 {
                                     <tr>
@@ -106,6 +107,20 @@
                                 }
                             </tbody>
                         </table>
+                        @if (!string.IsNullOrEmpty(ViewBag.NoResult as string))
+                        {
+                            <div class="alert alert-warning">
+                                @ViewBag.NoResult
+                            </div>
+                        }
+
+                        <!-- Thông báo nếu nhập sai định dạng -->
+                        @if (!string.IsNullOrEmpty(ViewBag.saidinhdang as string))
+                        {
+                            <div class="alert alert-danger">
+                                @ViewBag.saidinhdang
+                            </div>
+                        }
                     </div>
                 </div>
             </div>
@@ -113,7 +128,7 @@
         </div>
         <div class=" col-12 mt-3 .pagination btn-group me-2 " role="group" aria-label="First group">
             @Html.PagedListPager(Model,
-                     page => Url.Action("ListProduct", new { page = page }),
+                     page => Url.Action("searchOrder", new { page = page }),
                      new PagedListRenderOptions
             {
                 UlElementClasses = new[] { "pagination" },
@@ -125,12 +140,7 @@
 
 
     </div>
-    @if (TempData["SuccessMessage"] != null)
-    {
-        <script>
-            toastr.success('@TempData["SuccessMessage"]');
-        </script>
-    }
+    
 </div>
 
 
