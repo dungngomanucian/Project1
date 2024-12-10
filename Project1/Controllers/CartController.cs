@@ -383,6 +383,21 @@ namespace Project1.Controllers
                         Name = customerName // Dùng tên từ session hoặc nickname của khách hàng
                     }).ToList();
 
+                    foreach(var item in cartItems)
+                    {
+                        var productDetail = db.TProductDetails.SingleOrDefault(pd => pd.ProductDetailId == item.ProductDetailId);
+                        if(productDetail != null)
+                        {
+                            productDetail.Number -= item.Quantity;
+                            if(productDetail.Number < 0)
+                            {
+                                db.Database.RollbackTransaction();
+                                throw new Exception("Không đủ số lượng chi tiết sản phẩm");
+                            }
+                            db.TProductDetails.Update(productDetail);
+                        }                       
+                    }
+
                     db.AddRange(cthds);
                     db.SaveChanges();
                     db.Database.CommitTransaction();
