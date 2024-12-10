@@ -128,6 +128,8 @@ namespace Project1.Controllers
                 HttpContext.Session.Remove(MySetting.CART_KEY);
                 HttpContext.Session.Remove("VoucherId");
 
+                TempData["Message"] = "Đơn hàng được đặt thành công, bạn sẽ thanh toán khi nhận hàng";
+
                 return RedirectToAction("Index", "Order");
             }
             return View(Cart);

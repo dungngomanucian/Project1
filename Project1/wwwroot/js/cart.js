@@ -126,7 +126,7 @@
 
                 if (!applyVoucher) {
                     voucherCodeElement.textContent = "";
-                    discountValueElement.textContent = "";
+                    discountValueElement.textContent = formatCurrency(0);
                     toastr.warning(response.message, "Cảnh báo");
                 }
 
