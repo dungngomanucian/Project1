@@ -1,6 +1,5 @@
 ﻿@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
-@using Project1.Models
-@model List<TUser> 
+@model Project1.Areas.Admin.ViewModels.Email_Password_forAdmin
 @inject IHttpContextAccessor HttpContextAccessor
 @{
     ViewData["Title"] = "Quản lý Admin";
@@ -8,29 +7,31 @@
 }
 
 <div class="content-wrapper">
-    <!-- Thành phần thứ nhất: Form thêm email -->
+   
     <div class="form-container">
         <h3>Thêm Admin</h3>
         <br />
         <div class="row">
-           <div class="col-6">
+            <div class="col-6">
                 <form id="addAdminForm" method="post" asp-action="AddAdmin">
-
                     <div class="form-group row">
                         <label for="emailInput" class="col-sm-2">Email:</label>
                         <div class="col-sm-9">
                             <input type="email" id="emailInput" name="email" class="form-control" placeholder="Nhập email admin mới" required />
                         </div>
                     </div>
-
+                    <div class="form-group row">
+                        <label for="passwordInput" class="col-sm-2">Password:</label>
+                        <div class="col-sm-9 input-group">
+                            <input type="password" id="passwordInput" name="password" class="form-control" placeholder="Nhập password cho admin mới" required />
+                            <button type="button" class="btn btn-outline-secondary" id="togglePassword" style="margin-left: 5px;">Hiển thị</button>
+                        </div>
+                    </div>
                     <button type="button" class="btn btn-primary" id="submitButton">Thêm</button>
                 </form>
-           </div>
+            </div>
         </div>
     </div>
-
-    <hr />
-
     <!-- Thành phần thứ hai: Danh sách admin -->
     <div class="admin-list-container">
          <h3 class="dsadmin">Danh sách Admin</h3>
@@ -46,11 +47,11 @@
                             </tr>
                         </thead>
                         <tbody>
-                            @foreach (var admin in Model)
+                            @foreach (var admin in Model.listAdmin)
                             {
                                 <tr>
                                     <td>
-                                        <input type="radio" class="selectAdmin" name="selectedAdmin" data-email="@admin.Email" data-role="@admin.RoleId" value="@admin.Email" >
+                                        <input type="radio" class="selectAdmin" name="selectedAdmin" data-email="@admin.Email" data-role="@admin.RoleId" data-id="@admin.UserId">
                                     </td>
                                     <td>@admin.Email</td>
                                     <td>
@@ -69,7 +70,7 @@
                     </table>
                     <div class="action-buttons">
                         <button class="btn btn-success" id="btnGrantRole">Cấp quyền hạn</button>
-                        <button class="btn btn-danger" id="btnDeleteAccount" onclick="alert('Chức năng xoá tài khoản chưa được triển khai!')">Xoá tài khoản</button>
+                        <button class="btn btn-danger" id="btnDeleteAccount">Xoá tài khoản</button>
                     </div>
                 </div>
             </div>
@@ -77,19 +78,94 @@
 
         
     </div>
+    
 </div>
+@if (TempData["AddAdminSuccess"] != null)
+{
+    <script>
+        toastr.success('@TempData["AddAdminSuccess"]');
+    </script>
+}
+@if (TempData["DeleteAdmin"] != null)
+{
+    <script>
+        toastr.success('@TempData["DeleteAdmin"]');
+    </script>
+}
 
+<script>
+    // Xử lý sự kiện khi nhấn nút Xoá tài khoản
+    document.getElementById('btnDeleteAccount').addEventListener('click', function () {
+        // Kiểm tra xem có admin nào được chọn không
+        const selectedAdmin = document.querySelector('.selectAdmin:checked');
+
+        if (!selectedAdmin) {
+            alert('Vui lòng chọn một admin để xoá!');
+            return;
+        }
+
+        // Lấy thông tin admin đã chọn
+        const adminId = selectedAdmin.getAttribute('data-id');
+        const email = selectedAdmin.getAttribute('data-email');
+        
+        // Hiển thị hộp thoại xác nhận
+        const confirmDelete = confirm(`Bạn có chắc chắn muốn xoá tài khoản admin với email: ${email}?`);
+        if (confirmDelete) {
+
+            console.debug('id', adminId);
+            // Gửi yêu cầu Ajax để xoá tài khoản admin
+            $.ajax({
+                url: '@Url.Action("DeleteAdmin", "ManageUser", new { area = "Admin" })',
+                type: 'POST',
+                data: { adminId: adminId },
+                success: function (response) {
+                   
+                    if (response.success) {
+                        alert('Đã xoá tài khoản admin thành công!');
+                        location.reload(); // Reload lại trang để cập nhật danh sách admin
+                    } else {
+                        alert('Xoá tài khoản không thành công, vui lòng thử lại!');
+                    }
+                },
+                error: function (xhr, status, error) {
+                    console.log("AJAX Error: " + error);
+                    console.log("Response Text: " + xhr.responseText);
+                    alert("Có lỗi khi xoá tài khoản: " + xhr.responseText);
+                }
+            });
+        }
+    });
+</script>
+<script>
+    document.getElementById('togglePassword').addEventListener('click', function () {
+        const passwordInput = document.getElementById('passwordInput');
+        const toggleButton = document.getElementById('togglePassword');
+
+        if (passwordInput.type === 'password') {
+            passwordInput.type = 'text';
+            toggleButton.textContent = 'Ẩn';
+        } else {
+            passwordInput.type = 'password';
+            toggleButton.textContent = 'Hiển thị';
+        }
+    });
+</script>
 <script>
     // Xử lý sự kiện submit form
     document.getElementById('submitButton').addEventListener('click', function () {
         const email = document.getElementById('emailInput').value.trim();
+        const password = document.getElementById('passwordInput').value.trim();
 
         if (!email) {
             alert("Vui lòng nhập email!");
             return;
         }
+        if (!email) {
+            alert("Vui lòng nhập password!");
+            return;
+        }
 
-        const confirmAdd = confirm(`Bạn có chắc chắn muốn thêm tài khoản admin với email: ${email}?`);
+        const confirmAdd = confirm(`Bạn có chắc chắn muốn thêm tài khoản admin với email: ${email} với mật khẩu mặc định là ${password}?`);
         if (confirmAdd) {
             document.getElementById('addAdminForm').submit();
         }
@@ -109,20 +185,27 @@
 
         // Lấy thông tin admin đã chọn
         const email = selectedAdmin.getAttribute('data-email');
+        const adminId = selectedAdmin.getAttribute('data-id');
         const role = selectedAdmin.getAttribute('data-role');
 
         // Hiển thị hộp thoại xác nhận
-        const confirmGrantRole = confirm('Bạn có chắc chắn muốn cấp quyền Super Admin cho admin này?');
+        const confirmGrantRole = confirm('Bạn có chắc chắn muốn cấp quyền Super Admin cho admin này? Nếu bạn đồng ý, bạn sẽ mất quyền Super Admin, đồng thời bạn sẽ đăng xuất khỏi trang Công cụ Admin');
         if (confirmGrantRole) {
+            console.debug('admin id được truyền vào',adminId)
             // Gửi thông tin về admin đã chọn cho server
             if (role != 3) {
                 // Nếu admin chưa là Super Admin, thay đổi quyền
                 $.ajax({
                     url: '@Url.Action("GrantSuperAdmin", "ManageUser", new { area = "Admin" })', // Nếu sử dụng Area
                     type: 'POST',
-                    data: { email: email },
+                    data: { adminId: adminId },
                     success: function (response) {
-                        alert('Đã cấp quyền Super Admin cho: ' + email);
+                        if (response.success) {
+                            alert(response.message);
+                            window.location.href = '@Url.Action("Logout", "Login")'; // Chuyển hướng đến trang Logout
+                        } else {
+                            alert(response.message);
+                        }
                     },
                     error: function (xhr, status, error) {
                         alert('Có lỗi khi tải dữ liệu');
@@ -134,6 +217,8 @@
         }
     });
 </script>
+
+
 <style>
     .dsadmin{
         margin-left:10px;

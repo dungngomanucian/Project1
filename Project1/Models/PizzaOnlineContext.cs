@@ -47,7 +47,7 @@ public partial class PizzaOnlineContext : DbContext
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
 #warning To protect potentially sensitive information in your connection string, you should move it out of source code. You can avoid scaffolding the connection string by using the Name= syntax to read it from configuration - see https://go.microsoft.com/fwlink/?linkid=2131148. For more guidance on storing connection strings, see https://go.microsoft.com/fwlink/?LinkId=723263.
-        => optionsBuilder.UseSqlServer("Data Source=KIEUKIENQUYET\\SQLEXPRESS;Initial Catalog=PizzaOnline;Integrated Security=True;Connect Timeout=30;Encrypt=False;Trust Server Certificate=False;Application Intent=ReadWrite;Multi Subnet Failover=False");
+        => optionsBuilder.UseSqlServer("Data Source=LAPTOP-CESR45S5\\SQLEXPRESS;Initial Catalog=PizzaOnline;Integrated Security=True;Connect Timeout=30;Encrypt=True;Trust Server Certificate=True;Application Intent=ReadWrite;Multi Subnet Failover=False");
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -142,7 +142,7 @@ public partial class PizzaOnlineContext : DbContext
                 .HasColumnName("Order_ID");
             entity.Property(e => e.Address).HasMaxLength(200);
             entity.Property(e => e.Code)
-                .HasMaxLength(15)
+                .HasMaxLength(50)
                 .IsUnicode(false);
             entity.Property(e => e.CreatedBy)
                 .HasMaxLength(20)
@@ -492,13 +492,13 @@ public partial class PizzaOnlineContext : DbContext
                 .HasMaxLength(20)
                 .HasColumnName("Last_name");
             entity.Property(e => e.Nickname).HasMaxLength(25);
-            entity.Property(e => e.Password)
-                .HasMaxLength(10)
-                .IsUnicode(false);
+            entity.Property(e => e.Password).HasMaxLength(100);
             entity.Property(e => e.PhoneNumber)
                 .HasMaxLength(10)
                 .IsUnicode(false)
                 .IsFixedLength();
+            entity.Property(e => e.ResetToken).HasMaxLength(100);
+            entity.Property(e => e.ResetTokenExpiry).HasColumnType("datetime");
             entity.Property(e => e.RoleId).HasColumnName("Role_ID");
 
             entity.HasOne(d => d.Role).WithMany(p => p.TUsers)

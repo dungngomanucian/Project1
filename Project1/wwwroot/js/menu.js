@@ -54,7 +54,7 @@ function updatePriceBasedOnSelection() {
 
     const selectedSize = $('input[name="size"]:checked').val();
     const selectedCrust = $('input[name="crust"]:checked').val();
-    const quantity = parseInt($('#quantityInput').val());
+    let quantity = parseInt($('#quantityInput').val());
 
     console.log('Selected Size: ' + selectedSize);
     console.log('Selected Crust: ' + selectedCrust);
@@ -65,8 +65,48 @@ function updatePriceBasedOnSelection() {
     console.log('Selected ProductDetail: ' + selectedDetail);
 
     if (selectedDetail) {
+        const maxQuantity = selectedDetail.number;
+
+        // Điều chỉnh nếu vượt quá số lượng tồn
+        if (quantity > maxQuantity) {
+            if (maxQuantity > 0) {
+                quantity = maxQuantity;
+                $('#quantityInput').val(maxQuantity);
+            }
+            else {
+                quantity = 1;
+                $('#quantityInput').val(1);
+            }
+        } 
+
         const totalPrice = selectedDetail.price * quantity;
         $('#modalProductPrice').text(totalPrice.toLocaleString('vi-VN') + ' \u20AB');
+        $('#product-detail-number').text(selectedDetail.number);
+
+        // Xử lý khi chi tiết sản phẩm hết số lượng tồn
+        const addToCartButton = document.getElementById('addToCartButton');
+        const decreaseBtn = document.querySelector(".decrease");
+        const increaseBtn = document.querySelector(".increase");
+        if (selectedDetail.number <= 0) {
+            addToCartButton.style.opacity = 0.6;
+            addToCartButton.style.pointerEvents = "none";
+            addToCartButton.textContent = "Hết số lượng";
+
+            decreaseBtn.style.opacity = 0.6;
+            decreaseBtn.style.pointerEvents = "none";
+            increaseBtn.style.opacity = 0.6;
+            increaseBtn.style.pointerEvents = "none"
+        }
+        else {
+            addToCartButton.style.opacity = 1;
+            addToCartButton.style.pointerEvents = "auto";
+            addToCartButton.textContent = "Đưa vào giỏ hàng";
+    
+            decreaseBtn.style.opacity = 1;
+            decreaseBtn.style.pointerEvents = "auto";
+            increaseBtn.style.opacity = 1;
+            increaseBtn.style.pointerEvents = "auto"
+        }
     } else {
         $('#modalProductPrice').text('Giá không khả dụng');
     }
@@ -76,11 +116,22 @@ function updatePriceBasedOnSelection() {
 function updateQuantity(change) {
     var quantityInput = document.getElementById('quantityInput');
     var quantity = parseInt(quantityInput.value);
-    quantity += change;
-    if (quantity < 1) quantity = 1;
-    quantityInput.value = quantity;
 
-    console.log('Updated Quantity: ' + quantityInput.value);
+    // Lấy thông tin chi tiết sản phẩm hiện tại
+    const selectedSize = $('input[name="size"]:checked').val();
+    const selectedCrust = $('input[name="crust"]:checked').val();
+    const selectedDetail = window.currentProductDetails.find(
+        detail => detail.sizeId == selectedSize && detail.crustId == selectedCrust
+    );
+
+    if (selectedDetail) {
+        const maxQuantity = selectedDetail.number;
+        quantity += change;
+        if (quantity < 1) quantity = 1;
+        else if (quantity > maxQuantity) quantity = maxQuantity;
+        quantityInput.value = quantity;
+        console.log('Updated Quantity: ' + quantityInput.value);
+    }
 
     // Cập nhật giá sau khi thay đổi số lượng
     updatePriceBasedOnSelection();

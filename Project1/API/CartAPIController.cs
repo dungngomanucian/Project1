@@ -30,17 +30,19 @@ namespace Project1.API
                     message = "Hãy nhập địa chỉ giao hàng!"
                 });
             }
+
+            var productDetail = db.TProductDetails.SingleOrDefault(p => p.ProductDetailId == productDetailId);
+            if (productDetail == null)
+            {
+                return BadRequest(new
+                {
+                    success = false,
+                    message = $"Không tìm thấy sản phẩm có mã {productDetailId}"
+                });
+            }
+
             if (item == null)
             {
-                var productDetail = db.TProductDetails.SingleOrDefault(p => p.ProductDetailId == productDetailId);
-                if (productDetail == null)
-                {
-                    return BadRequest(new
-                    {
-                        success = false,
-                        message = $"Không tìm thấy sản phẩm có mã {productDetailId}"
-                    });
-                }
                 var product = db.TProducts.SingleOrDefault(p => p.ProductId == productDetail.ProductId);
                 if (product != null)
                 {
@@ -60,6 +62,14 @@ namespace Project1.API
             }
             else
             {
+                if ((quantity + item.Quantity) > productDetail.Number)
+                {
+                    return Ok(new
+                    {
+                        success = false,
+                        message = $"Chỉ còn lại {productDetail.Number} sản phẩm này tại cửa hàng"
+                    });
+                }
                 item.Quantity += quantity;
             }
 
@@ -123,115 +133,41 @@ namespace Project1.API
             });
         }
 
-        [HttpPost("CreateOrder")]
-        public IActionResult CreateOrder()
+        [HttpPost("CartValidation")]
+        public IActionResult CartValidation()
         {
             var gioHang = Cart;
             if (!gioHang.Any())
             {
-                return BadRequest(new
+                return Ok(new
                 {
                     success = false,
                     message = "Giỏ hàng của bạn chưa có sản phẩm"
                 });
             }
 
-            // Lấy voucher id từ session
-            long voucherId = 0;
-            double? totalPrice = gioHang.Sum(p => p.ThanhTien);
-            if (long.TryParse(HttpContext.Session.GetString("VoucherId"), out long id))
+            if (!long.TryParse(HttpContext.Session.GetString("UserId"), out long userId))
             {
-                voucherId = id;
-                var voucher = db.TVouchers.SingleOrDefault(p => p.VoucherId == voucherId);
-                // Tính tổng tiền sau khi giảm khuyến mại
-                if (voucher != null)
-                {
-                    var discountAmount = voucher.IsPercentDiscountType == true ? totalPrice * (voucher.DiscountValue / 100) : voucher.DiscountValue;
-                    discountAmount = discountAmount <= voucher.MaxDiscountValue ? discountAmount : voucher.MaxDiscountValue;
-                    totalPrice -= discountAmount;
-
-                    // Giảm số lượng voucher trừ đi 1
-                    if (voucher.Number > 0)
-                    {
-                        voucher.Number -= 1;
-                        db.TVouchers.Update(voucher);
-                        db.SaveChanges();
-                    }
-                    else
-                    {
-                        return BadRequest(new
-                        {
-                            success = false,
-                            message = $"Voucher {voucher.Code} đã hết số lượng"
-                        });
-                    }
-                }
-            }
-
-            if (long.TryParse(HttpContext.Session.GetString("UserId"), out long userId))
-            {
-                var address = HttpContext.Session.GetString("SelectedAddress");
-                if (address != null)
-                {
-                    var orderId = db.TOrders.OrderByDescending(o => o.OrderId).FirstOrDefault()?.OrderId + 1 ?? 1;
-                    var orderCode = "ORDER" + orderId;
-
-                    // Thêm mới một Order
-                    var order = new TOrder
-                    {
-                        OrderId = orderId,
-                        Code = orderCode,
-                        CustomerId = userId,
-                        TotalPrice = totalPrice,
-                        Address = address,
-                        Date = DateTime.Now,
-                        VoucherId = voucherId != 0 ? voucherId : null,
-                        StatusId = 1,
-                        Deleted = false
-                    };
-
-                    // Thêm Order vào DB
-                    db.TOrders.Add(order);
-                    db.SaveChanges();
-
-                    // Tạo OrderDetail cho từng ProductDetail
-                    var orderDetails = Cart.Select(pd => new TOrderDetail
-                    {
-                        OrderId = orderId,
-                        ProductDetailId = pd.ProductDetailId,
-                        Number = pd.Quantity,
-                    }).ToList();
-
-                    db.TOrderDetails.AddRange(orderDetails);
-                    db.SaveChanges();
-
-                    HttpContext.Session.Remove(MySetting.CART_KEY);
-
-                    HttpContext.Session.Remove("VoucherId");
-
-                    return Ok(new
-                    {
-                        success = true,
-                        message = "Bạn đã đặt hàng thành công"
-                    });
-                }
-                else
-                {
-                    return BadRequest(new
-                    {
-                        success = false,
-                        message = "Bạn chưa nhập địa chỉ giao hàng"
-                    });
-                }
-            }
-            else
-            {
-                return BadRequest(new
+                return Ok(new
                 {
                     success = false,
                     message = "Bạn chưa đăng nhập"
                 });
             }
+
+            var address = HttpContext.Session.GetString("SelectedAddress");
+            if (address == null)
+            {
+                return Ok(new
+                {
+                    success = false,
+                    message = "Bạn chưa nhập địa chỉ giao hàng"
+                });
+            }
+            return Ok(new
+            {
+                success = true
+            });
         }
 
         [HttpGet("RemoveCart")]

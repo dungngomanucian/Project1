@@ -1,129 +1,415 @@
 ﻿@model IEnumerable<Project1.ViewModels.CartItem>
 @{
-	ViewData["Title"] = "Checkout";
+    ViewData["Title"] = "Checkout";
+    Layout = "~/Views/Shared/_LayoutPayment.cshtml";
 }
 
-<!-- Single Page Header start -->
-<div class="container-fluid page-header py-5">
-	<h1 class="text-center text-white display-6">Checkout</h1>
-	<ol class="breadcrumb justify-content-center mb-0">
-		<li class="breadcrumb-item"><a href="#">Home</a></li>
-		<li class="breadcrumb-item"><a href="#">Pages</a></li>
-		<li class="breadcrumb-item active text-white">Checkout</li>
-	</ol>
+<style>
+    #CanEdit, #COD, #VNPay, #Paypal {
+        background-color: white !important; /* Nền trắng khi không tích */
+        border: none;
+    }
+
+    #CanEdit:checked, #COD:checked, #VNPay:checked, #Paypal:checked {
+        background-color: #FF6600 !important; /* Nền cam khi được tích */
+    }
+
+    /* Đảm bảo hình ảnh luôn hiển thị */
+    .table img {
+        display: block; /* Đảm bảo hình ảnh không bị ẩn */
+        max-width: 100%; /* Giữ hình ảnh tỉ lệ chính xác */
+        height: auto;
+        margin: 0 auto; /* Canh giữa hình ảnh trong ô */
+    }
+
+    /* Đảm bảo bảng có thanh cuộn khi vượt kích thước */
+    .custom-scroll {
+        overflow-x: auto; /* Cuộn ngang nếu bảng lớn hơn khung nhìn */
+        overflow-y: auto; /* Cuộn dọc nếu cần */
+        max-height: 400px; /* Tùy chọn giới hạn chiều cao bảng */
+    }
+
+    /* Tránh xuống dòng nội dung */
+    .table {
+        white-space: nowrap;
+    }
+
+    /* Đặt kích thước cố định cho cột hình ảnh */
+    .table th:first-child,
+    .table td:first-child {
+        width: 80px; /* Kích thước cố định cho cột hình ảnh */
+        min-width: 80px;
+        text-align: center; /* Canh giữa nội dung cột */
+    }
+
+    /* Loại bỏ viền đen ở nút thanh toán */
+    /* Loại bỏ outline và border khi focus vào button */
+    button:focus, input:focus {
+        outline: none !important; /* Loại bỏ outline */
+        border: none !important; /* Loại bỏ border */
+        box-shadow: none !important; /* Loại bỏ shadow */
+    }
+</style>
+
+<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css">
+
+<div class="container-xxl position-relative bg-white d-flex p-0">
+    <!-- Content Start -->
+    <div class="content" style="margin: 0!important; width: 100%">
+        <!-- Navbar Start -->
+        <nav class="navbar navbar-expand bg-light navbar-light px-4 py-0" style="background-color: white!important">
+            <a class="text-nowrap logo-img text-center d-block py-3 w-100" style="padding-bottom: 0px !important">
+                <img src="../1LayoutLogin/assets/images/logos/dark-logo.svg" width="180" alt="" style="border-radius: 50%">
+                <p class="mb-2" style="margin-top: 2%; margin-bottom: 0%!important; color: black!important; font-size: 200%; font-weight: bolder!important; font-family: 'Poppins', sans-serif!important;">THANH TOÁN ĐƠN HÀNG</p>
+            </a>
+        </nav>
+        <!-- Navbar End -->
+        <!-- Sale & Revenue Start -->
+        <div class="container-fluid pt-4 px-4" style="padding-top: 0px!important">
+            <div class="order-status" style="margin-top: 30px!important">
+                <ul class="status-steps">
+                    <li class="status-step active" data-status="pending">
+                        <span class="step-number"><i class="fas fa-hourglass-half"></i></span>
+                        <span class="step-label">Đang xác nhận</span>
+                    </li>
+                    <li class="status-step completed" data-status="pending">
+                        <span class="step-number"><i class="fas fa-wallet"></i></span>
+                        <span class="step-label">Thanh toán</span>
+                    </li>
+                    <li class="status-step" data-status="confirmed">
+                        <span class="step-number"><i class="fas fa-check-circle"></i></span>
+                        <span class="step-label">Đã xác nhận</span>
+                    </li>
+                    <li class="status-step" data-status="preparing">
+                        <span class="step-number"><i class="fas fa-cogs"></i></span>
+                        <span class="step-label">Đang làm món ăn</span>
+                    </li>
+                    <li class="status-step" data-status="shipping">
+                        <span class="step-number"><i class="fas fa-truck"></i></span>
+                        <span class="step-label">Đang giao hàng</span>
+                    </li>
+                    <li class="status-step last-step" data-status="delivered">
+                        <span class="step-number"><i class="fas fa-box-open"></i></span>
+                        <span class="step-label">Giao hàng thành công</span>
+                    </li>
+                </ul>
+            </div>
+        </div>
+        <!-- Sale & Revenue End -->
+        <!-- Recent Sales Start -->
+        <div class="container-fluid pt-4 px-4" style="margin-top: 3%">
+            <div class="bg-light text-center rounded p-4">
+                <div class="d-flex align-items-center justify-content-between mb-4">
+                    <h6 class="mb-0" style="font-size:150%!important; font-family: 'Poppins', sans-serif!important;">CHI TIẾT ĐƠN HÀNG</h6>
+                </div>
+                <div class="table-responsive custom-scroll">
+                    <table class="table text-center align-middle table-bordered table-hover mb-0" style="font-size: 110%!important">
+                        <thead>
+                            <tr class="text-dark">
+                                <th scope="col" style="width: 80px;">Hình ảnh</th> <!-- Đặt chiều rộng cố định cho hình ảnh -->
+                                <th scope="col">Sản phẩm</th>
+                                <th scope="col">Đơn giá</th>
+                                <th scope="col">Số lượng</th>
+                                <th scope="col">Thành tiền</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var item in Model)
+                            {
+                                <tr>
+                                    <td>
+                                        <img src="@Url.Content("../ImagesProduct/" + item.Image)"
+                                             class="img-fluid rounded"
+                                             style="width: 60px; height: 60px;"
+                                             alt="@item.Name">
+                                    </td>
+                                    <td>@item.Name</td>
+                                    <td>@item.Price đ</td>
+                                    <td>@item.Quantity</td>
+                                    <td>@string.Format(new System.Globalization.CultureInfo("vi-VN"), "{0:N0}", item.ThanhTien) đ</td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+        <!-- Recent Sales End -->
+        <!-- Widgets Start -->
+        <form asp-action="Checkout" asp-controller="Cart">
+            <div class="container-fluid pt-4 px-4" style="padding-bottom: 5%">
+                <div class="row g-4">
+                    <!-- Thông tin giao hàng (chiếm 2/3 màn hình) -->
+                    <div class="col-sm-12 col-xl-8">
+                        <div class="bg-light rounded h-100 p-4">
+                            <h6 class="mb-4">Thông tin giao hàng</h6>
+
+                            <!-- Có thể sửa đổi thông tin -->
+                            <div class="form-check my-3">
+                                <input type="checkbox" name="CanEdit" class="form-check-input" id="CanEdit" style="border: none"
+                                @(ViewBag.CanEdit ? "checked" : "")>
+                                <label class="form-check-label" for="CanEdit">Chỉnh sửa thông tin giao hàng</label>
+                            </div>
+
+                            <!-- Người nhận hàng -->
+                            <div class="form-item delivery-info">
+                                <label class="form-label my-3">Người nhận hàng<sup>*</sup></label>
+                                <input type="text" name="HoTen" id="HoTen" class="form-control"
+                                       value="@ViewBag.HoTen" @(ViewBag.CanEdit ? "" : "readonly") required>
+                            </div>
+
+                            <!-- Địa chỉ nhận hàng -->
+                            <div class="form-item delivery-info">
+                                <label class="form-label my-3">Địa chỉ nhận hàng<sup>*</sup></label>
+                                <input type="text" name="DiaChi" id="DiaChi" class="form-control"
+                                       value="@ViewBag.DiaChi" @(ViewBag.CanEdit ? "" : "readonly") required>
+                            </div>
+
+                            <!-- Điện thoại -->
+                            <div class="form-item delivery-info">
+                                <label class="form-label my-3">Điện thoại<sup>*</sup></label>
+                                <input type="text" name="DienThoai" id="DienThoai" class="form-control"
+                                       value="@ViewBag.DienThoai" @(ViewBag.CanEdit ? "" : "readonly") required>
+                            </div>
+
+                            <!-- Ghi chú -->
+                            <div class="form-item mt-3">
+                                <textarea name="GhiChu" class="form-control" spellcheck="false" cols="30" rows="7" placeholder="Ghi chú cho đơn hàng"></textarea>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Phương thức thanh toán và Chi tiết thanh toán (chiếm 1/3 màn hình) -->
+                    <div class="col-sm-12 col-xl-4">
+                        <div class="bg-light rounded p-4 mb-4">
+                            <h6 class="mb-4">Phương thức thanh toán</h6>
+                            <div class="form-check form-switch">
+                                <input class="form-check-input payment-method" type="checkbox" role="switch"
+                                       id="COD" name="method" value="COD">
+                                <label class="form-check-label" for="COD">
+                                    Thanh toán khi nhận hàng
+                                </label>
+                            </div>
+                            <div class="form-check form-switch">
+                                <input class="form-check-input payment-method" type="checkbox" role="switch"
+                                       id="VNPay" name="method" value="VNPay">
+                                <label class="form-check-label" for="VNPay">
+                                    Thanh toán qua VNPay
+                                </label>
+                            </div>
+                            <div class="form-check form-switch">
+                                <input class="form-check-input payment-method" type="checkbox" role="switch"
+                                       id="Paypal" name="method" value="Paypal">
+                                <label class="form-check-label" for="Paypal">
+                                    Thanh toán qua Paypal
+                                </label>
+                            </div>
+                        </div>
+
+                        <div class="bg-light rounded p-4">
+                            <h6 class="mb-4">Chi tiết thanh toán</h6>
+
+                            <!-- Mã giảm giá -->
+                            <div class="d-flex align-items-center border-bottom py-2 mb-1">
+                                <span class="rounded-circle flex-shrink-0 d-flex justify-content-center align-items-center" style="width: 40px; height: 40px; background-color: #f0f0f0;">
+                                    <i class="fas fa-tags" style="font-size: 20px; color: #FF6600;"></i>
+                                </span>
+                                <div class="w-100 ms-3">
+                                    <div class="d-flex w-100 justify-content-between">
+                                        <h6 class="mb-0">Mã giảm giá</h6>
+                                    </div>
+                                    <span id="final-price" class="text-end fw-bold">
+                                        @(ViewBag.VoucherCode == "" ? "Không áp dụng": ViewBag.VoucherCode)
+                                    </span>
+                                </div>
+                            </div>
+
+                            <!-- Tổng tiền -->
+                            <div class="d-flex align-items-center border-bottom py-2 mb-1">
+                                <span class="rounded-circle flex-shrink-0 d-flex justify-content-center align-items-center" style="width: 40px; height: 40px; background-color: #f0f0f0;">
+                                    <i class="fas fa-wallet" style="font-size: 20px; color: #FF6600;"></i>
+                                </span>
+                                <div class="w-100 ms-3">
+                                    <div class="d-flex w-100 justify-content-between">
+                                        <h6 class="mb-0">Tổng tiền</h6>
+                                    </div>
+                                    <span id="total-price" class="text-end fw-bold">
+                                        @(Model.Sum(p => p.ThanhTien) > 0 ? String.Format("{0:0,0 \u20AB}", Model.Sum(p => p.ThanhTien)).Replace(",", ".") : "0 \u20AB")
+                                    </span>
+                                </div>
+                            </div>
+
+                            <!-- Giảm khuyến mại -->
+                            <div class="d-flex align-items-center border-bottom py-2 mb-1">
+                                <span class="rounded-circle flex-shrink-0 d-flex justify-content-center align-items-center" style="width: 40px; height: 40px; background-color: #f0f0f0;">
+                                    <i class="fas fa-ticket-alt" style="font-size: 20px; color: #FF6600;"></i>
+                                </span>
+                                <div class="w-100 ms-3">
+                                    <div class="d-flex w-100 justify-content-between">
+                                        <h6 class="mb-0">Giảm khuyến mại</h6>
+                                    </div>
+                                    <span id="discount-value" class="text-end fw-bold">
+                                        @(ViewBag.DiscountAmount > 0 ? String.Format("{0:0,0 \u20AB}", ViewBag.DiscountAmount).Replace(",", ".") : "0 \u20AB")
+                                    </span>
+                                </div>
+                            </div>
+
+                            <!-- Tổng thanh toán -->
+                            <div class="d-flex align-items-center border-bottom py-2 mb-1">
+                                <span class="rounded-circle flex-shrink-0 d-flex justify-content-center align-items-center" style="width: 40px; height: 40px; background-color: #f0f0f0;">
+                                    <i class="fas fa-credit-card" style="font-size: 20px; color: #FF6600;"></i>
+                                </span>
+                                <div class="w-100 ms-3">
+                                    <div class="d-flex w-100 justify-content-between">
+                                        <h6 class="mb-0">Tổng thanh toán</h6>
+                                    </div>
+                                    <span id="final-price" class="text-end fw-bold">
+                                        @(ViewBag.FinalPrice > 0 ? String.Format("{0:0,0 \u20AB}", ViewBag.FinalPrice).Replace(",", ".") : "0 \u20AB")
+                                    </span>
+                                </div>
+                            </div>
+
+                            <div class="d-flex justify-content-end mb-2" style="margin-top: 5%">
+                                <button type="button" class="btn btn-primary ms-2" style="border: none"><a asp-controller="Cart" asp-action="Index" style="color: white">Quay lại giỏ hàng</a></button>
+                                <button id="sbmPP" type="button" class="btn btn-primary ms-2" style="border: none; background-color: #FF6600">
+                                    <input style="border: none; background-color: #FF6600" type="submit" id="submitButton" name="payment" class="btn btn-primary w-100 py-2" value="Thanh toán">
+                                </button>
+                            </div>
+                            <div id="paypal-button-container" class="form-item mt-3" style="max-width:1000px; display:none;"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </form>
+
+        <!-- Widgets End -->
+
+    </div>
+    <!-- Content End -->
 </div>
-<!-- Single Page Header End -->
-<!-- Checkout Page Start -->
-<div class="container-fluid py-5">
-	<div class="container py-5">
-		<h1 class="mb-4">Hóa Đơn</h1>
-		<form asp-action="Checkout" asp-controller="Cart">
-			<div class="row g-5">
-				<div class="col-md-12 col-lg-6 col-xl-7">
-					<div class="form-check my-3">
-						<input type="checkbox" name="GiongKhachHang" class="form-check-input" id="GiongKhachHang" value="false">
-						<label class="form-check-label" for="GiongKhachHang">Giống thông tin khách hàng?</label>
-					</div>
-					<div class="form-item delivery-info">
-						<label class="form-label my-3">Người nhận hàng<sup>*</sup></label>
-						<input type="text" name="HoTen" class="form-control" required>
-					</div>
-					<div class="form-item delivery-info">
-						<label class="form-label my-3">Địa chỉ nhận hàng<sup>*</sup></label>
-						<input type="text" name="DiaChi" class="form-control" placeholder="123 Lê Lợi, Quận 1" required>
-					</div>
-					<div class="form-item delivery-info">
-						<label class="form-label my-3">Điện thoại<sup>*</sup></label>
-						<input type="text" name="DienThoai" class="form-control" required>
-					</div>
-					<div class="form-item mt-3">
-						<textarea name="GhiChu" class="form-control" spellcheck="false" cols="30" rows="11" placeholder="Ghi chú"></textarea>
-					</div>
-					<input type="submit" name="payment" class="btn border-secondary text-uppercase text-primary w-100 mt-2" value="Đặt hàng (COD)">
-					<input type="submit" name="payment" class="btn border-secondary text-uppercase text-primary w-100 mt-2" value="Thanh toán VNPay">
-					<div id="paypal-button-container" class="form-item mt-3" style="max-width:1000px;"></div>
-				</div>
-				<div class="col-md-12 col-lg-6 col-xl-5">
-					<div class="table-responsive">
-						<table class="table">
-							<thead>
-								<tr>
-									<th scope="col">Sản phẩm</th>
-									<th scope="col">Tên</th>
-									<th scope="col">Đơn giá</th>
-									<th scope="col">Số lượng</th>
-									<th scope="col">Thành tiền</th>
-								</tr>
-							</thead>
-							<tbody>
-								@foreach (var item in Model)
-								{
-									<tr>
-										<th scope="row">
-											<div class="d-flex align-items-center mt-2">
-												<img src="@Url.Content("../ImagesProduct/" + item.Image)" class="img-fluid rounded-circle" style="width: 90px; height: 90px;" alt="@item.Name">
-											</div>
-										</th>
-										<td class="py-5">@item.Name</td>
-										<td class="py-5">$@item.Price</td>
-										<td class="py-5">@item.Quantity</td>
-										<td class="py-5">@item.ThanhTien</td>
-									</tr>
-								}							
-							</tbody>
-						</table>
-					</div>					
-				</div>
-			</div>
-		</form>
-	</div>
-</div>
-<!-- Checkout Page End -->
-@section Scripts {
-	<script src="https://www.paypal.com/sdk/js?client-id=@ViewBag.PaypalClientdId"></script>
-	<script>
-		$(document).ready(function () {
-			$("#GiongKhachHang").change(function () {
-				if ($(this).prop("checked")) {
-					$(this).val(true);
-					$(".delivery-info").addClass("d-none");
-				} else {
-					$(this).val(false);
-					$(".delivery-info").removeClass("d-none");
-				}
-			});
-		});
 
-		paypal.Buttons({
-			style: {
-				layout: 'vertical',
-				color: 'silver',
-				tagline: 'false'
-			},
-			createOrder: (data, actions) => {
-				return fetch("/Cart/create-paypal-order", {
-					method: "post",
-				}).then((response) => {
-					if (!response.ok) {
-						return response.json().then(error => { throw error; });
-					}
+<script src="/lib/jquery//dist/jquery.js"></script>
+<script src="//cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
+<script src="https://sandbox.paypal.com/sdk/js?client-id=@ViewBag.PaypalClientId"></script>
+<script>
+    // Lấy tất cả các checkbox thuộc nhóm thanh toán
+    const checkboxes = document.querySelectorAll('.payment-method');
 
-					return response.json();
-				}).then((order) => order.id)
-				.catch(error => alert(error.message));
-			},
-			onApprove: (data, actions) => {
-				return fetch(`/Cart/capture-paypal-order?orderId=${data.orderID}`, {
-					method: "post",
-				}).then((response) => {
-					if (!response.ok) {
-						return response.json().then(error => { throw error; });
-					}
+    // Xử lý checkbox để đảm bảo chỉ một cái được chọn và không cho phép uncheck hết
+    checkboxes.forEach(checkbox => {
+        checkbox.addEventListener('change', function () {
+            if (this.checked) {
+                // Bỏ chọn tất cả checkbox khác
+                checkboxes.forEach(cb => {
+                    if (cb !== this) {
+                        cb.checked = false;
+                    }
+                });
+            } else {
+                // Nếu không có checkbox nào được chọn, giữ checkbox này được chọn
+                const checkedCount = Array.from(checkboxes).filter(cb => cb.checked).length;
+                if (checkedCount === 0) {
+                    this.checked = true;
+                }
+            }
+        });
+    });
 
-					//Đổi địa chỉ tới action thông báo thành công
-					window.location.href = "/Cart/PaymentSuccess";
-				}).catch(error => alert(error.message));
-			}
-		}).render('#paypal-button-container');
-	</script>
-}
+    // Xử lý sự kiện thay đổi của checkbox để hiển thị/ẩn nút Paypal
+    document.querySelectorAll('input[name="method"]').forEach(radio => {
+        radio.addEventListener('change', function () {
+            const submitbutton = document.getElementById('submitButton');
+            const submitbutton2 = document.getElementById('sbmPP');
+            submitbutton.value = `${this.value}`;
+
+            if (this.value === 'Paypal') {
+                submitbutton.style.display = 'none';
+                submitbutton2.style.display = 'none';
+                document.getElementById('paypal-button-container').style.display = 'block';
+                renderPaypalButton();  // Hàm render nút PayPal
+            } else {
+                submitbutton.style.display = 'block';
+                submitbutton2.style.display = 'block';
+                document.getElementById('paypal-button-container').style.display = 'none';
+            }
+        });
+    });
+
+    // Hàm render nút PayPal
+    function renderPaypalButton() {
+        const paypalContainer = document.getElementById('paypal-button-container');
+        // Làm sạch container để không tạo thêm nhiều nút PayPal
+        paypalContainer.innerHTML = '';
+
+        paypal.Buttons({
+            style: {
+                layout: 'vertical',
+                color: 'silver',
+                tagline: 'false'
+            },
+            createOrder: (data, actions) => {
+                return fetch("/Cart/create-paypal-order", {
+                    method: "POST",
+                }).then((response) => {
+                    if (!response.ok) {
+                        return response.json().then(error => { throw error; });
+                    }
+                    return response.json();
+                }).then((order) => order.id)
+                    .catch(error => alert(error.message));
+            },
+            onApprove: (data, actions) => {
+                return fetch(`/Cart/capture-paypal-order?orderId=${data.orderID}`, {
+                    method: "POST",
+                }).then((response) => {
+                    if (!response.ok) {
+                        return response.json().then(error => { throw error; });
+                    }
+                    window.location.href = "/Cart/PaymentSuccess";  // Chuyển hướng sau khi thanh toán thành công
+                }).catch(error => alert(error.message));
+            }
+        }).render('#paypal-button-container');
+    }
+
+    // Kiểm tra khi nhấn nút Thanh toán
+    document.getElementById('sbmPP').addEventListener('click', function (event) {
+        // Kiểm tra xem có checkbox nào được chọn không
+        const isAnyChecked = Array.from(checkboxes).some(checkbox => checkbox.checked);
+
+        if (!isAnyChecked) {
+            // Nếu không có checkbox nào được chọn, ngăn hành động tiếp theo
+            event.preventDefault();
+
+            // Hiển thị thông báo dạng toast
+            showToast('Vui lòng chọn một phương thức thanh toán trước khi tiếp tục!');
+        } else {
+            // Nếu có checkbox được chọn, thực hiện hành động tiếp theo
+            document.getElementById('submitButton').click(); // Giả lập click để gửi form
+        }
+    });
+
+    // Hàm hiển thị toast thông báo
+    function showToast(message) {
+        toastr.warning(message, "Cảnh báo");
+    }
+
+    // Đảm bảo trạng thái readonly của các trường input khi checkbox thay đổi
+    document.addEventListener("DOMContentLoaded", function () {
+        const canEditCheckbox = document.getElementById("CanEdit");
+        const fields = ["HoTen", "DiaChi", "DienThoai"].map(id => document.getElementById(id));
+
+        // Hàm để bật/tắt trạng thái readonly của các trường input
+        function toggleFieldsState() {
+            const isEditable = canEditCheckbox.checked;
+            fields.forEach(field => {
+                field.readOnly = !isEditable;
+            });
+        }
+
+        // Cập nhật trạng thái khi trang được load
+        toggleFieldsState();
+
+        // Gắn sự kiện thay đổi trạng thái checkbox
+        canEditCheckbox.addEventListener("change", toggleFieldsState);
+    });
+</script>
