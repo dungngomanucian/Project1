@@ -4,7 +4,7 @@ namespace Project1.ViewModels
 {
 	public class CheckoutVM
 	{
-		public bool GiongKhachHang { get; set; }
+
         [Required(ErrorMessage = "Họ và tên không được để trống")]
         public string? HoTen { get; set; }
         [Required(ErrorMessage = "Địa chỉ không được để trống")]
