@@ -11,11 +11,14 @@
                 <i class="fas fa-user-edit"></i> Thông tin tài khoản
             </a>
         </li>
-        <li>
-            <a class="dropdown-item" href="#" data-bs-toggle="modal" id="openChangePasswordModal" data-bs-target="#changePasswordModal">
-                <i class="fas fa-key"></i> Đổi mật khẩu
-            </a>
-        </li>
+        @if (Context.Session.GetString("GoogleID") == null)
+        {
+            <li>
+                <a class="dropdown-item" href="#" data-bs-toggle="modal" id="openChangePasswordModal" data-bs-target="#changePasswordModal">
+                    <i class="fas fa-key"></i> Đổi mật khẩu
+                </a>
+            </li>
+        }
         <li>
             <a asp-controller="Login" asp-action="Logout" class="dropdown-item">
                 <i class="fas fa-sign-out-alt me-2"></i> Đăng xuất

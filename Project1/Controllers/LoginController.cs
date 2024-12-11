@@ -193,13 +193,9 @@ namespace Project1.Controllers
             var nameClaim = result.Principal.FindFirst(ClaimTypes.Name)?.Value;
             var googleId = result.Principal.FindFirst(ClaimTypes.NameIdentifier)?.Value; // Google Account ID
 
-            if (string.IsNullOrEmpty(emailClaim) || string.IsNullOrEmpty(nameClaim) || string.IsNullOrEmpty(googleId))
-            {
-                return RedirectToAction("Index", "Login");
-            }
 
             // Kiểm tra xem user với Google ID này đã tồn tại chưa
-            var existingUser = db.TUsers.FirstOrDefault(u => u.GoogleId == googleId);
+            var existingUser = db.TUsers.FirstOrDefault(u => u.Email == emailClaim && u.IsGoogleAccount == true);
 
             if (existingUser != null)
             {
@@ -207,6 +203,7 @@ namespace Project1.Controllers
                 HttpContext.Session.SetString("Email", existingUser.Email);
                 HttpContext.Session.SetString("UserId", existingUser.UserId.ToString());
                 HttpContext.Session.SetString("Name", existingUser.Nickname ?? nameClaim);
+                HttpContext.Session.SetString("GoogleID", existingUser.GoogleId ?? googleId);
             }
             else
             {
@@ -235,6 +232,7 @@ namespace Project1.Controllers
                     Email = emailClaim,
                     Nickname = nameClaim,
                     GoogleId = googleId,
+                    IsGoogleAccount = true,
                     RoleId = 2, // Set role mặc định (2 = user thường)
                     CreatedDate = DateTime.Now
                     // Thêm các trường khác nếu cần
@@ -247,11 +245,12 @@ namespace Project1.Controllers
                 HttpContext.Session.SetString("Email", newUser.Email);
                 HttpContext.Session.SetString("UserId", newUser.UserId.ToString());
                 HttpContext.Session.SetString("Name", newUser.Nickname);
+                HttpContext.Session.SetString("GoogleID", newUser.GoogleId);
             }
 
             TempData["Title"] = "Thành công";
             TempData["Content"] = "Đăng nhập Google thành công.";
-
+            TempData["Type"] = "Success";
             return RedirectToAction("Index", "Menu");
         }
         public IActionResult LogoutUsual()
