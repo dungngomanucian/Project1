@@ -34,30 +34,47 @@ namespace Project1.Areas.Admin.Controllers
         [Route("ManageAdmin")]
         public IActionResult ManageAdmin()
         {
-            var lstAdmin = db.TUsers.AsNoTracking().Where(x => (x.RoleId == 1 || x.RoleId==3) ).ToList();
-            return View("ManageAdmin", lstAdmin);
+            var lstAdmin = db.TUsers.AsNoTracking().Where(x => (x.RoleId == 1 || x.RoleId == 3) && x.Deleted==false).ToList();
+            var viewmodel = new Email_Password_forAdmin
+            {
+                listAdmin=lstAdmin
+            };
+            return View("ManageAdmin", viewmodel);
         }
 
 
         [Route("AddAdmin")]
-        [HttpGet]
-        public IActionResult AddAdmin()
+        [HttpPost]
+        public IActionResult AddAdmin(Email_Password_forAdmin viewmodel)
         {
-           return View();
+            int lastUserId = (int)db.TUsers.DefaultIfEmpty().Max(p => (int?)p.UserId ?? 0);
+            string password = BCrypt.Net.BCrypt.HashPassword(viewmodel.Password);
+            var admin_new_account = new TUser
+            {
+                UserId = lastUserId + 1,
+                RoleId = 1,
+                Deleted = false,
+                Email = viewmodel.Email,
+                Password = password
+            };
+            db.TUsers.Add(admin_new_account);
+            db.SaveChanges();
+            var lstAdmin = db.TUsers.AsNoTracking().Where(x => (x.RoleId == 1 || x.RoleId == 3)).ToList();
+            var model = new Email_Password_forAdmin
+            {
+                listAdmin = lstAdmin
+            };
+            TempData["AddAdminSuccess"] = "Thêm admin thành công";
+            return RedirectToAction("ManageAdmin",model);
         }
 
+        [Route("GrantSuperAdmin")]
         [HttpPost]
-        public IActionResult GrantSuperAdmin(string email)
+        public IActionResult GrantSuperAdmin(int adminId)
         {
             if (int.Parse(HttpContext.Session.GetString("RoleId")) == 3)
             {
-                var admin = db.TUsers.FirstOrDefault(a => a.Email == email);
-                if (admin != null)
-                {
-                    admin.RoleId = 3; // Cập nhật thành Super Admin
-                    db.TUsers.Update(admin);
-                    db.SaveChanges();
-                }
+                
                 var superadmin = db.TUsers.FirstOrDefault(a => a.RoleId == 3);
                 if (superadmin != null)
                 {
@@ -65,16 +82,54 @@ namespace Project1.Areas.Admin.Controllers
                     db.TUsers.Update(superadmin);
                     db.SaveChanges();
                 }
-                TempData["SuccessMessage"] = "Cấp quyền Super Admin thành công!";
-                return RedirectToAction("ManageAdmin");
+                var admin = db.TUsers.Where(a => a.UserId == adminId).FirstOrDefault();
+                if (admin != null)
+                {
+                    admin.RoleId = 3; // Cập nhật thành Super Admin
+                    db.TUsers.Update(admin);
+                    db.SaveChanges();
+                }
+
+                //TempData["SuccessMessage"] = "Cấp quyền Super Admin thành công!";
+                return Json(new { success = true, message = "Cấp quyền Super Admin thành công!" });
             }
             else
             {
-                TempData["WrongRole"]= "Không có quyền hạn để thực hiện thao tác này";
-                return RedirectToAction("Index", "HomeAdmin");
+                //TempData["WrongRole"]= "Không có quyền hạn để thực hiện thao tác này";
+                return Json(new { success = false, message = "Không có quyền hạn để thực hiện thao tác này" });
             }
         }
 
+        [Route("DeleteAdmin")]
+        [HttpPost]
+        public IActionResult DeleteAdmin(int adminId)
+        {
+            var admin_delete = db.TUsers.Where(x=>x.UserId==adminId).FirstOrDefault();
+            
+            if (admin_delete != null)
+            {
+                // Kiểm tra quyền để chắc chắn không xoá admin quyền cao (Super Admin)
+                if (admin_delete.RoleId != 3) // Tránh xoá Super Admin
+                {
+                    admin_delete.Deleted = true;
+                    db.TUsers.Update(admin_delete);
+                    db.SaveChanges();
+
+                    return Json(new { success = true });
+                }
+                else
+                {
+                    return Json(new { success = false, message = "Không thể xoá Super Admin!" });
+                }
+            }
+            return Json(new { success = false, message = "Không tìm thấy admin!" });
+            /*var lstAdmin = db.TUsers.AsNoTracking().Where(x => (x.RoleId == 1 || x.RoleId == 3)).ToList();
+            var model = new Email_Password_forAdmin
+            {
+                listAdmin = lstAdmin
+            };
+            return RedirectToAction("ManageAdmin", model);*/
+        }
     }
 
 

@@ -30,8 +30,10 @@ namespace Project1.Controllers
 
                 // Lấy role từ claims để redirect về đúng trang
                 var roleClaim = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Role);
-                if (roleClaim != null && roleClaim.Value == "1") // Admin
+                if (roleClaim != null && (roleClaim.Value == "1"|| roleClaim.Value == "3")) // Admin
                 {
+                    if (roleClaim.Value == "3") { HttpContext.Session.SetString("RoleId", "3"); }
+                    if (roleClaim.Value == "1") { HttpContext.Session.SetString("RoleId", "1"); }
                     return RedirectToAction("Index", "HomeAdmin", new { area = "Admin" });
                 }
                 else // User thường
@@ -124,9 +126,10 @@ namespace Project1.Controllers
                             authProperties
                         );
 
-                        if (u.RoleId == 1)
+                        if (u.RoleId == 1 || u.RoleId == 3)
                         {
                             HttpContext.Session.SetString("UserNickname", u.Email.ToString());
+                            HttpContext.Session.SetString("RoleId", u.RoleId.ToString());
                             return RedirectToAction("Index", "HomeAdmin", new { area = "Admin" });
                         }
                         else
