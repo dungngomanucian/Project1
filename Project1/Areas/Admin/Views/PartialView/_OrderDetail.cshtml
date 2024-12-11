@@ -96,27 +96,98 @@
     @if (Model.Order.StatusId==1){
         <div class="col-12 btn_accept">
             <button type="button" class="btn btn-inverse-dark btn-sm">
-                <a class="" link_btn confirm-accept"" asp-action="Accept" asp-route-orderId="@Model.Order.OrderId">Xác nhận</a>
+                <a class="link_btn confirm-accept" asp-action="Accept" asp-route-orderId="@Model.Order.OrderId">Xác nhận</a>
             </button>
         </div>
     }
-    else
+    else if (Model.Order.StatusId == 2)
     {
-        
+        <div class="col-12 btn_accept">
+            <button type="button" class="btn btn-inverse-dark btn-sm">
+                <a class=" link_btn confirm-cook" asp-action="Preparing" asp-route-orderId="@Model.Order.OrderId">Chuyển cho bếp</a>
+            </button>
+        </div>
+    }
+    else if (Model.Order.StatusId == 3)
+    {
+        <div class="col-12 btn_accept">
+            <button type="button" class="btn btn-inverse-dark btn-sm">
+                <a class=" link_btn confirm-ship" asp-action="Delivering" asp-route-orderId="@Model.Order.OrderId">Giao hàng</a>
+            </button>
+        </div>
+    }
+    else if (Model.Order.StatusId == 4)
+    {
+        <div class="col-12 btn_accept">
+            <button type="button" class="btn btn-inverse-dark btn-sm">
+                <a class=" link_btn confirm-finish" asp-action="Finish" asp-route-orderId="@Model.Order.OrderId">Giao thành công</a>
+            </button>
+        </div>
     }
 </div>
 
 <script>
     document.addEventListener('DOMContentLoaded', function () {
         // Lấy tất cả các liên kết có lớp 'confirm-accept'
-        const links = document.querySelectorAll('.confirm-accept');
+        const link1s = document.querySelectorAll('.confirm-accept');
 
-        links.forEach(link => {
+        link1s.forEach(link => {
             link.addEventListener('click', function (event) {
                 event.preventDefault(); // Ngăn chặn hành động mặc định của thẻ a
 
                 // Hiển thị hộp thoại xác nhận
                 const userConfirmed = confirm('Bạn có chắc chắn muốn xác nhận đơn hàng này không?');
+
+                if (userConfirmed) {
+                    // Nếu người dùng đồng ý, chuyển hướng đến liên kết
+                    window.location.href = this.href;
+                }
+                // Nếu người dùng không đồng ý, không làm gì cả
+            });
+        });
+
+        const link2s = document.querySelectorAll('.confirm-cook');
+
+        link2s.forEach(link => {
+            link.addEventListener('click', function (event) {
+                event.preventDefault(); // Ngăn chặn hành động mặc định của thẻ a
+
+                // Hiển thị hộp thoại xác nhận
+                const userConfirmed = confirm('Bạn có chắc chắn muốn cập nhật trạng thái đơn hàng thành "Đang làm" không?');
+
+                if (userConfirmed) {
+                    // Nếu người dùng đồng ý, chuyển hướng đến liên kết
+                    window.location.href = this.href;
+                }
+                // Nếu người dùng không đồng ý, không làm gì cả
+            });
+        });
+
+        const link3s = document.querySelectorAll('.confirm-ship');
+
+        link3s.forEach(link => {
+            link.addEventListener('click', function (event) {
+                event.preventDefault(); // Ngăn chặn hành động mặc định của thẻ a
+
+                // Hiển thị hộp thoại xác nhận
+                const userConfirmed = confirm('Bạn có chắc chắn muốn chuyển trạng thái đơn hàng này thành "Đang giao"  không?');
+
+                if (userConfirmed) {
+                    // Nếu người dùng đồng ý, chuyển hướng đến liên kết
+                    window.location.href = this.href;
+                }
+                // Nếu người dùng không đồng ý, không làm gì cả
+            });
+        });
+
+        const link4s = document.querySelectorAll('.confirm-finish');
+
+        link4s.forEach(link => {
+            link.addEventListener('click', function (event) {
+                event.preventDefault(); // Ngăn chặn hành động mặc định của thẻ a
+
+                // Hiển thị hộp thoại xác nhận
+                const userConfirmed = confirm('Bạn có chắc chắn muốn chuyển trạng thái đơn hàng này thành "Giao hàng thành công"  không?');
 
                 if (userConfirmed) {
                     // Nếu người dùng đồng ý, chuyển hướng đến liên kết

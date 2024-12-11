@@ -1,0 +1,159 @@
+﻿@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
+@using Project1.Models
+@model List<TUser> 
+@inject IHttpContextAccessor HttpContextAccessor
+@{
+    ViewData["Title"] = "Quản lý Admin";
+    Layout = "~/Areas/Admin/Views/Shared/_LayoutAdmin1.cshtml";
+}
+
+<div class="content-wrapper">
+    <!-- Thành phần thứ nhất: Form thêm email -->
+    <div class="form-container">
+        <h3>Thêm Admin</h3>
+        <br />
+        <div class="row">
+           <div class="col-6">
+                <form id="addAdminForm" method="post" asp-action="AddAdmin">
+
+                    <div class="form-group row">
+                        <label for="emailInput" class="col-sm-2">Email:</label>
+                        <div class="col-sm-9">
+                            <input type="email" id="emailInput" name="email" class="form-control" placeholder="Nhập email admin mới" required />
+                        </div>
+                    </div>
+
+                    <button type="button" class="btn btn-primary" id="submitButton">Thêm</button>
+                </form>
+           </div>
+        </div>
+    </div>
+
+    <hr />
+
+    <!-- Thành phần thứ hai: Danh sách admin -->
+    <div class="admin-list-container">
+         <h3 class="dsadmin">Danh sách Admin</h3>
+        <div class="col-lg-5 grid-margin stretch-card">
+            <div class="card">
+                <div class="card-body">
+                    <table class="table table-responsive">
+                        <thead>
+                            <tr>
+                                <th>Chọn</th>
+                                <th>Email</th>
+                                <th>Quyền hạn</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var admin in Model)
+                            {
+                                <tr>
+                                    <td>
+                                        <input type="radio" class="selectAdmin" name="selectedAdmin" data-email="@admin.Email" data-role="@admin.RoleId" value="@admin.Email" >
+                                    </td>
+                                    <td>@admin.Email</td>
+                                    <td>
+                                        @if (admin.RoleId == 3)
+                                        {
+                                            <span class="badge bg-danger">Super Admin</span>
+                                        }
+                                        else
+                                        {
+                                            <span class="badge bg-secondary">Admin</span>
+                                        }
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                    <div class="action-buttons">
+                        <button class="btn btn-success" id="btnGrantRole">Cấp quyền hạn</button>
+                        <button class="btn btn-danger" id="btnDeleteAccount" onclick="alert('Chức năng xoá tài khoản chưa được triển khai!')">Xoá tài khoản</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        
+    </div>
+</div>
+
+<script>
+    // Xử lý sự kiện submit form
+    document.getElementById('submitButton').addEventListener('click', function () {
+        const email = document.getElementById('emailInput').value.trim();
+
+        if (!email) {
+            alert("Vui lòng nhập email!");
+            return;
+        }
+
+        const confirmAdd = confirm(`Bạn có chắc chắn muốn thêm tài khoản admin với email: ${email}?`);
+        if (confirmAdd) {
+            document.getElementById('addAdminForm').submit();
+        }
+    });
+</script>
+
+<script>
+    // Xử lý sự kiện cấp quyền hạn
+    document.getElementById('btnGrantRole').addEventListener('click', function () {
+        const selectedAdmin = document.querySelector('.selectAdmin:checked');
+
+        // Kiểm tra xem có admin nào được chọn không
+        if (!selectedAdmin) {
+            alert('Vui lòng chọn một admin!');
+            return;
+        }
+
+        // Lấy thông tin admin đã chọn
+        const email = selectedAdmin.getAttribute('data-email');
+        const role = selectedAdmin.getAttribute('data-role');
+
+        // Hiển thị hộp thoại xác nhận
+        const confirmGrantRole = confirm('Bạn có chắc chắn muốn cấp quyền Super Admin cho admin này?');
+        if (confirmGrantRole) {
+            // Gửi thông tin về admin đã chọn cho server
+            if (role != 3) {
+                // Nếu admin chưa là Super Admin, thay đổi quyền
+                $.ajax({
+                    url: '@Url.Action("GrantSuperAdmin", "ManageUser", new { area = "Admin" })', // Nếu sử dụng Area
+                    type: 'POST',
+                    data: { email: email },
+                    success: function (response) {
+                        alert('Đã cấp quyền Super Admin cho: ' + email);
+                    },
+                    error: function (xhr, status, error) {
+                        alert('Có lỗi khi tải dữ liệu');
+                    }
+                });
+            } else {
+                alert('Admin này đã là Super Admin!');
+            }
+        }
+    });
+</script>
+<style>
+    .dsadmin{
+        margin-left:10px;
+    }
+    .col-sm-2{
+       
+        margin-top:8px;
+        align-content:center;
+    }
+    .content-wrapper {
+        padding: 20px;
+    }
+    .form-container, .admin-list-container {
+        margin-bottom: 30px;
+    }
+    .action-buttons button {
+        margin-right: 10px;
+    }
+    .badge {
+        padding: 5px 10px;
+        font-size: 14px;
+    }
+</style>

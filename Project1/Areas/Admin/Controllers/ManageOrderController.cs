@@ -51,6 +51,61 @@ namespace Project1.Areas.Admin.Controllers
             return View("ListUnAcceptOrder", orders);
         }
 
+        [Route("Preparing")]
+        public IActionResult Preparing(int orderId)
+        {
+            var order = db.TOrders.Where(x => x.OrderId == orderId).FirstOrDefault();
+            if (order != null)
+            {
+                order.StatusId = 3; // Đặt trạng thái thành "Đang làm"
+                db.TOrders.Update(order);
+                db.SaveChanges();
+            }
+            
+
+            // Trả về view `ListUnAcceptOrder` cùng dữ liệu danh sách chưa xác nhận
+            return View();
+        }
+
+        [Route("Delivering")]
+        public IActionResult Delivering(int orderId)
+        {
+            var order = db.TOrders.Where(x => x.OrderId == orderId).FirstOrDefault();
+            if (order != null)
+            {
+                order.StatusId = 4; // Đặt trạng thái thành "Đang giao hàng"
+                db.TOrders.Update(order);
+                db.SaveChanges();
+            }
+            var orders = db.TOrders
+                  .AsNoTracking()
+                  .Where(x => x.StatusId == 3)
+                  .OrderBy(x => x.OrderId)
+                  .ToList();
+
+            // Trả về view `ListUnAcceptOrder` cùng dữ liệu danh sách chưa xác nhận
+            return View("ListUnAcceptOrder", orders);
+        }
+
+        [Route("Finish")]
+        public IActionResult Finish(int orderId)
+        {
+            var order = db.TOrders.Where(x => x.OrderId == orderId).FirstOrDefault();
+            if (order != null)
+            {
+                order.StatusId = 5; // Đặt trạng thái thành "Giao hàng thành công"
+                db.TOrders.Update(order);
+                db.SaveChanges();
+            }
+            var orders = db.TOrders
+                  .AsNoTracking()
+                  .Where(x => x.StatusId == 4)
+                  .OrderBy(x => x.OrderId)
+                  .ToList();
+
+            // Trả về view `ListUnAcceptOrder` cùng dữ liệu danh sách chưa xác nhận
+            return View("ListUnAcceptOrder", orders);
+        }
         //action trả về view hiển thị danh sách các hoá đơn mới
         [Route("ListUnAcceptOrder")]
         public IActionResult ListUnAcceptOrder( )
