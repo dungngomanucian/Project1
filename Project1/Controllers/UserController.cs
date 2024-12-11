@@ -29,8 +29,27 @@ namespace Project1.Controllers
         {
             if (ModelState.IsValid)
             {
+                var existingUser = _db.TUsers.FirstOrDefault(u => u.Email == model.Email);
+                if (existingUser != null)
+                {
+                    // Nếu có, kiểm tra Google_ID
+                    if (existingUser.GoogleId == null)
+                    {
+                        TempData["Title"] = "Thất bại";
+                        TempData["Content"] = "Email đã tồn tại trong hệ thống! Vui lòng đăng kí bằng tài khoản email khác";
+                        TempData["Type"] = "Error";
+                        return View(model);
+                    }
+                    else
+                    {
+                        // Nếu tài khoản đã tồn tại và GoogleId != null
+                        TempData["Title"] = "Thất bại";
+                        TempData["Content"] = "Email này đã được liên kết với Google. Vui lòng đăng nhập bằng Google!";
+                        TempData["Type"] = "Error";
+                        return View(model);
+                    }
+                }
                 var maxUserId = _db.TUsers.Max(u => u.UserId);
-
                 var lastUserCode = _db.TUsers
                .Where(u => u.Code.StartsWith("USER"))
                .OrderByDescending(u => u.Code)
@@ -65,8 +84,11 @@ namespace Project1.Controllers
                 };
 
                 _db.TUsers.Add(user);
-                _db.SaveChanges(); 
+                _db.SaveChanges();
 
+                TempData["Title"] = "Đăng ký thành công!";
+                TempData["Content"] = $"Chào mừng {user.Nickname} đến với Sixter's Pizza. Vui lòng đăng nhập để tiếp tục.";
+                TempData["Type"] = "Success";
                 return RedirectToAction("Index", "Login");
             }
 
@@ -94,7 +116,15 @@ namespace Project1.Controllers
 
             try
             {
-                string subject = "Khôi phục mật khẩu - Pizza Online";
+                string resetToken = Guid.NewGuid().ToString();
+                user.ResetToken = resetToken;
+                user.ResetTokenExpiry = DateTime.Now.AddHours(24);
+                _db.SaveChanges();
+
+                string resetLink = Url.Action("ResetPassword", "User",
+                    new { token = resetToken }, Request.Scheme);
+
+                string subject = "Đặt lại mật khẩu - Pizza Online";
                 string body = $@"
                 <!DOCTYPE html>
                 <html>
@@ -143,26 +173,23 @@ namespace Project1.Controllers
                 <body>
                     <div class='email-container'>
                         <div class='header'>
-                            <img src='https://scontent.fhan14-3.fna.fbcdn.net/v/t39.30808-1/308879100_1524090248029489_1362350270885674186_n.jpg?stp=dst-jpg_s200x200&_nc_cat=111&ccb=1-7&_nc_sid=0ecb9b&_nc_eui2=AeGVXSxlD4qYvg4oYProsMSXA750HLRreo4DvnQctGt6jg56k4MrkTYmA2mxYHdcLcS0amCoVhHXCA7YXH50TrJ5&_nc_ohc=oTofn4dILysQ7kNvgFoAvqh&_nc_zt=24&_nc_ht=scontent.fhan14-3.fna&_nc_gid=AqyQcQW8Uo4_nUUtOS-0jJJ&oh=00_AYD_Pe6vIPcqTPfpzLh5mVrRkrhVQ1dUOiDf5PEU5TJGVg&oe=674CA27C' alt='Pizza Online Logo' class='logo'>
+                             <img src='https://scontent.fhan14-3.fna.fbcdn.net/v/t39.30808-6/469167161_2056725571432618_6103467900661450282_n.jpg?stp=dst-jpg_p526x296_tt6&_nc_cat=103&ccb=1-7&_nc_sid=127cfc&_nc_ohc=yNfgwjCDDY8Q7kNvgHI7STq&_nc_zt=23&_nc_ht=scontent.fhan14-3.fna&_nc_gid=AnW82zGL2Gj5gtl8HqA8R3Y&oh=00_AYDxdj7957VgRhPP13LPaBKlQOAugAO-6ABOl72cbD0D0Q&oe=675E49AC' style='border-radius: 50%; width: 130px; height: 130px; object-fit: cover;' alt='Pizza Online Logo' class='logo'>
                             <h1 style='color: #ff6b6b;'>Sixter's Pizza</h1>
                         </div>
-                
+            
                         <div class='content'>
                             <h2>Xin chào {user.Nickname},</h2>
-                            <p>Chúng tôi nhận được yêu cầu khôi phục mật khẩu từ bạn.</p>
-                    
-                            <div class='password-box'>
-                                <p>Mật khẩu của bạn là: <strong>{user.Password}</strong></p>
-                            </div>
-                    
-                            <p>Vì lý do bảo mật, chúng tôi khuyến nghị bạn nên:</p>
-                            <ul>
-                                <li>Đăng nhập ngay sau khi nhận được email này</li>
-                                <li>Thay đổi mật khẩu của bạn</li>
-                                <li>Không chia sẻ mật khẩu với người khác</li>
-                            </ul>
-                        </div>
+                            <p>Chúng tôi nhận được yêu cầu đặt lại mật khẩu từ bạn.</p>
                 
+                            <div class='password-box'>
+                                <p>Vui lòng click vào link dưới đây để đặt lại mật khẩu:</p>
+                                <p><a href='{resetLink}' style='background-color: #ff6b6b; color: white; padding: 10px 20px; text-decoration: none; border-radius: 5px;'>Đặt lại mật khẩu</a></p>
+                                <p>Link này sẽ hết hạn sau 24 giờ.</p>
+                            </div>
+                
+                            <p><strong>Lưu ý:</strong> Nếu bạn không yêu cầu đặt lại mật khẩu, vui lòng bỏ qua email này.</p>
+                        </div>
+            
                         <div class='footer'>
                             <p>Đây là email tự động, vui lòng không trả lời email này.</p>
                             <p>© 2024 Sister's Pizza . Tất cả các quyền được bảo lưu.</p>
@@ -176,15 +203,214 @@ namespace Project1.Controllers
 
                 await _emailService.SendEmailAsync(email, subject, body);
 
-                TempData["Success"] = "Mật khẩu đã được gửi đến email của bạn!";
+                TempData["Title"] = "Thành công";
+                TempData["Content"] = "Link đặt lại mật khẩu đã được gửi đến email của bạn!";
+                TempData["Type"] = "Success";
                 return RedirectToAction("Index", "Login");
             }
             catch (Exception ex)
             {
-                // Log the actual error
-                TempData["Error"] = $"Có lỗi xảy ra khi gửi email: {ex.Message}";
+                TempData["Title"] = "Thất bại";
+                TempData["Content"] = $"Có lỗi xảy ra khi gửi email: {ex.Message}";
+                TempData["Type"] = "Error";
                 return View();
             }
+        }
+        [HttpGet]
+        public IActionResult ResetPassword(string token)
+        {
+            var user = _db.TUsers.FirstOrDefault(u => u.ResetToken == token
+                && u.ResetTokenExpiry > DateTime.Now);
+            if (user == null)
+            {
+                TempData["Title"] = "Thất bại";
+                TempData["Content"] = "Link đặt lại mật khẩu không hợp lệ hoặc đã hết hạn!";
+                TempData["Type"] = "Error";
+                return RedirectToAction("Index", "Login");
+            }
+
+            var model = new ResetPasswordViewModel { Token = token };
+            return View(model);
+        }
+
+        [HttpPost]
+        public IActionResult ResetPassword(ResetPasswordViewModel model)
+        {
+            if (!ModelState.IsValid)
+            {
+                return View(model);
+            }
+
+            var user = _db.TUsers.FirstOrDefault(u =>
+                u.ResetToken == model.Token &&
+                u.ResetTokenExpiry > DateTime.Now);
+
+            if (user == null)
+            {
+                TempData["Title"] = "Thất bại";
+                TempData["Content"] = "Link đặt lại mật khẩu không hợp lệ hoặc đã hết hạn!";
+                TempData["Type"] = "Error";
+                return RedirectToAction("Index", "Login");
+            }
+
+            user.Password = BCrypt.Net.BCrypt.HashPassword(model.NewPassword);
+            user.ResetToken = null;
+            user.ResetTokenExpiry = null;
+            _db.SaveChanges();
+
+            TempData["Title"] = "Thành công";
+            TempData["Content"] = "Đặt lại mật khẩu thành công! Vui lòng đăng nhập lại.";
+            TempData["Type"] = "Success";
+            return RedirectToAction("Index", "Login");
+        }
+
+        [HttpGet]
+        public IActionResult GetUserProfile()
+        {
+            try
+            {
+                var userIdString = HttpContext.Session.GetString("UserId");
+
+                if (string.IsNullOrEmpty(userIdString))
+                {
+                    return Json(new { success = false, message = "Không tìm thấy thông tin người dùng trong session" });
+                }
+
+                // Chuyển đổi string sang int
+                if (!int.TryParse(userIdString, out int userId))
+                {
+                    return Json(new { success = false, message = "UserId không hợp lệ" });
+                }
+
+                var user = _db.TUsers.FirstOrDefault(u => u.UserId == userId);
+
+                if (user == null)
+                {
+                    return Json(new { success = false, message = "Không tìm thấy thông tin người dùng" });
+                }
+
+                var viewModel = new UserProfileViewModel
+                {
+                    UserId = user.UserId,
+                    FirstName = user.FirstName ?? "",
+                    LastName = user.LastName ?? "",
+                    Nickname = user.Nickname ?? "",
+                    Email = user.Email ?? "",
+                    PhoneNumber = user.PhoneNumber ?? "",
+                    Address = user.Address ?? ""
+                };
+
+                return Json(new
+                {
+                    success = true,
+                    data = viewModel,
+                    message = "Lấy thông tin người dùng thành công"
+                });
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error in GetUserProfile: {ex.Message}"); // Debug log
+                return Json(new { success = false, message = ex.Message });
+            }
+        }
+
+        [HttpPost]
+        public IActionResult UpdateProfile([FromBody] UserProfileViewModel model)
+        {
+            try
+            {
+                if (!ModelState.IsValid)
+                {
+                    return Json(new
+                    {
+                        success = false,
+                        message = "Dữ liệu không hợp lệ",
+                        errors = ModelState.Values.SelectMany(v => v.Errors).Select(e => e.ErrorMessage)
+                    });
+                }
+
+                var user = _db.TUsers.Find(model.UserId);
+                if (user == null)
+                {
+                    return Json(new { success = false, message = "Không tìm thấy người dùng" });
+                }
+
+                // Cập nhật thông tin
+                user.FirstName = model.FirstName;
+                user.LastName = model.LastName;
+                user.Nickname = model.Nickname;
+                user.Email = model.Email;
+                user.PhoneNumber = model.PhoneNumber;
+                user.Address = model.Address;
+
+                _db.TUsers.Update(user);
+                _db.SaveChanges();
+
+                return Json(new
+                {
+                    success = true,
+                    message = "Cập nhật thông tin thành công",
+                    data = new
+                    {
+                        userId = user.UserId,
+                        firstName = user.FirstName,
+                        lastName = user.LastName,
+                        nickname = user.Nickname,
+                        email = user.Email,
+                        phoneNumber = user.PhoneNumber,
+                        address = user.Address
+                    }
+                });
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error in UpdateProfile: {ex.Message}"); // Debug log
+                return Json(new { success = false, message = $"Lỗi: {ex.Message}" });
+            }
+        }
+
+        [HttpPost]
+        public IActionResult ChangePassword([FromBody] ChangePasswordViewModel model)
+        {
+            if (string.IsNullOrWhiteSpace(model.CurrentPassword) || string.IsNullOrWhiteSpace(model.NewPassword))
+            {
+                return Json(new { success = false, message = "Vui lòng nhập đầy đủ thông tin mật khẩu." });
+            }
+            if (model.NewPassword.Length < 6)
+            {
+                return Json(new { success = false, message = "Mật khẩu mới phải có ít nhất 6 ký tự." });
+            }
+
+            if (model.NewPassword != model.ConfirmPassword)
+            {
+                return Json(new { success = false, message = "Mật khẩu mới và xác nhận mật khẩu không trùng khớp." });
+            }
+
+            var userIdString = HttpContext.Session.GetString("UserId");
+
+            if (string.IsNullOrEmpty(userIdString))
+            {
+                return Json(new { success = false, message = "Không tìm thấy thông tin người dùng trong session" });
+            }
+
+            // Chuyển đổi string sang int
+            if (!int.TryParse(userIdString, out int userId))
+            {
+                return Json(new { success = false, message = "UserId không hợp lệ" });
+            }
+
+            var user = _db.TUsers.FirstOrDefault(u => u.UserId == userId);
+
+            if (user == null)
+                return Json(new { success = false, message = "Không tìm thấy người dùng" });
+
+            if (!BCrypt.Net.BCrypt.Verify(model.CurrentPassword, user.Password))
+                return Json(new { success = false, message = "Mật khẩu hiện tại không đúng" });
+
+            user.Password = BCrypt.Net.BCrypt.HashPassword(model.NewPassword);
+            _db.SaveChanges();
+
+            return Json(new { success = true, message = "Đổi mật khẩu thành công" });
         }
     }
 }

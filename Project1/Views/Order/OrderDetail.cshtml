@@ -166,7 +166,7 @@
                 <div class="row">
                     <div class="col-lg-2 col-md-4 col-sm-12 mb-3">
                         <label class="text-muted m-0">Người nhận</label>
-                        <div class="fw-bold">@((Model.Customer?.Nickname) ?? "null")</div>
+                        <div class="fw-bold">@((Model.Customer?.FirstName) ?? "null")</div>
                     </div>
                     <div class="col-lg-2 col-md-4 col-sm-12 mb-3">
                         <label class="text-muted m-0">Email</label>
@@ -193,6 +193,10 @@
                     <div>
                         <a asp-controller="Order" asp-action="Index" type="button" class="btn btn-lg btn-secondary" style="margin-right:10px;">Quay lại</a>
                         <button id="cancel-order" type="button" class="btn btn-lg btn-danger" data-bs-toggle="modal" data-bs-target="#cancelOrderModal">Hủy đơn hàng</button>
+                        @if (Model.PaymentMethod?.Name == "PAYPAL" && Model.Status?.StatusId == 1)
+                        {
+                            <button id="refund-order" type="button" class="btn btn-lg btn-warning" data-bs-toggle="modal" data-bs-target="#refundOrderModal">Hoàn tiền</button>
+                        }
                     </div>
                 </div>
             </div>
@@ -217,8 +221,59 @@
         </div>
     </div>
 
+    <!--Modal xác nhận hoàn tiền-->
+    <div class="modal fade" id="refundOrderModal" tabindex="-1" aria-labelledby="refundOrderModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="refundOrderModalLabel">Xác nhận hoàn tiền</h5>
+                </div>
+                <div class="modal-body">
+                    Bạn có chắc chắn muốn hoàn tiền cho đơn hàng này không?
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Không</button>
+                    <button id="refund-order-button" type="button" class="btn btn-warning" data-order-id="@Model.Code" data-amount ="@Model.TotalPrice">Hoàn tiền</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
     <script src="/lib/jquery//dist/jquery.js"></script>
     <script src="//cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
     <script src="../js/order.js"></script>
+
 </body>
 </html>
+
+<script>
+    document.getElementById('refund-order-button').addEventListener('click', function () {  
+        const orderId = this.dataset.orderId;  // Lấy order ID từ thuộc tính data-order-id
+        const amount = this.dataset.amount;    // Lấy giá trị amount từ data-amount (VND)
+        const amountUsd = Math.round(amount / 24000 * 100) / 100;
+
+        if (!confirm('Bạn có chắc chắn muốn hoàn tiền đơn hàng này?')) return;
+
+        // Gửi yêu cầu hoàn tiền qua POST
+        fetch(`/Order/RefundOrder?captureId=${orderId}&amount=${amountUsd}&currency=USD`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        })
+            .then(response => {
+                if (!response.ok) {
+                    return response.json().then(error => { throw new Error(error.message); });
+                }
+                return response.json();
+            })
+            .then(data => {
+                alert(data.message || 'Hoàn tiền thành công!');
+                window.location.reload();  // Reload trang để cập nhật trạng thái đơn hàng
+            })
+            .catch(error => {
+                alert(`Hoàn tiền thất bại: ${error.message}`);
+            });
+    });
+</script>

@@ -53,6 +53,18 @@ builder.Services.AddSession(options =>
 // đăng ký VnPayClient dạng Singleton() - chỉ có 1 instance duy nhất trong toàn ứng dụng
 builder.Services.AddSingleton<IVnPayService, VnPayService>();
 
+// đăng ký PaypalClient dạng Singleton()
+builder.Services.AddSingleton(x => new PaypalClient(
+        builder.Configuration["PaypalOptions:AppId"],
+        builder.Configuration["PaypalOptions:AppSecret"],
+        builder.Configuration["PaypalOptions:Mode"]
+));
+
+builder.Services.AddSingleton<ExchangeRateService>();
+builder.Services.Configure<ExchangeRateApiOptions>(
+    builder.Configuration.GetSection("ExchangeRateApi")
+);
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.

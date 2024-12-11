@@ -83,8 +83,16 @@
     </div>
 </div>
 
+
+
 <script src="/lib/jquery//dist/jquery.js"></script>
 <script src="//cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
+
+@if (TempData["Message"] != null)
+{
+    <script>toastr.success('@TempData["Message"]', "Thành công");</script>
+}
+
 <script>
     document.addEventListener("DOMContentLoaded", function () {
         // Gán sự kiện cho tất cả các nút confirmCancel

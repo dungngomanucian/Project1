@@ -48,7 +48,7 @@
         event.preventDefault();
 
         // Gửi yêu cầu đến API CreateOrder
-        fetch('/api/CartAPI/CreateOrder', {
+        fetch('/api/CartAPI/CartValidation', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
@@ -57,18 +57,7 @@
             .then(response => response.json())
             .then(data => {
                 if (data.success) {
-                    let tableBody = $('table tbody');
-                    tableBody.empty();
-
-                    voucherCodeElement.textContent = "";
-                    totalPriceElement.textContent = "0 ₫";
-                    discountValueElement.textContent = "0 ₫";
-                    finalPriceElement.textContent = "0 ₫";
-
-                    updateVoucherList(0);
-                    updateCartQuantity();
-
-                    toastr.success(data.message, "Thành công"); 
+                    window.location.href = "/Cart/Checkout";
                 }
                 else {                   
                     toastr.warning(data.message, "Cảnh báo");
@@ -137,7 +126,7 @@
 
                 if (!applyVoucher) {
                     voucherCodeElement.textContent = "";
-                    discountValueElement.textContent = "";
+                    discountValueElement.textContent = formatCurrency(0);
                     toastr.warning(response.message, "Cảnh báo");
                 }
 

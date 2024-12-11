@@ -16,9 +16,11 @@ public partial class TUser
 
     public string? Nickname { get; set; }
 
+
     [Required(ErrorMessage = "Mật khẩu không được để trống")]
-    [MinLength(4, ErrorMessage = "Mật khẩu phải có ít nhất 4 ký tự")]
+    [MinLength(6, ErrorMessage = "Mật khẩu phải có ít nhất 6 ký tự")]
     public string? Password { get; set; }
+
     [Required(ErrorMessage = "Email không được để trống")]
     [EmailAddress(ErrorMessage = "Email không hợp lệ")]
     public string? Email { get; set; }
@@ -31,7 +33,12 @@ public partial class TUser
 
     public long? Point { get; set; }
 
+    [RegularExpression(@"^\d{10}$", ErrorMessage = "Số điện thoại phải là 10 chữ số")]
     public string? PhoneNumber { get; set; }
+
+    public string? ResetToken { get; set; }
+
+    public DateTime? ResetTokenExpiry { get; set; }
 
     public string? CreatedBy { get; set; }
 

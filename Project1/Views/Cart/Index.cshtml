@@ -39,6 +39,14 @@
             box-shadow: 0 0 0 1px rgba(0,0,0,0.15) inset;
             vertical-align: middle;
         }
+
+        #open-modal-button {
+            transition: color 0.3s ease, transform 0.2s ease;
+        }
+
+            #open-modal-button:hover {
+                text-decoration: underline;
+            }
     </style>
 
     <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css">
@@ -156,6 +164,7 @@
                     <div>
                         <a asp-controller="Menu" asp-action="Index" type="button" class="btn btn-lg btn-secondary" style="margin-right:10px;">Quay lại</a>                    
                         <button id="checkout" type="submit" class="btn btn-lg btn-primary">Thanh toán</button>
+                        @* <button id="checkout" type="submit" class="btn btn-lg btn-primary">Thanh toán</button> *@
                     </div>
                 </div>
             </div>
@@ -199,7 +208,7 @@
                                     </div>
                                 </div>
                                 <a href="#" class="apply-discount" data-bs-dismiss="modal" voucher-id="@item.VoucherId" style="pointer-events:@pointerEvents">@buttonText</a>
-                            </div>                                                   
+                            </div>                                              
                         }
                     </div>
                 </div>

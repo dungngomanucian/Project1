@@ -2,8 +2,18 @@
     @if (Context.Session.GetString("UserId") != null || Context.Session.GetString("Email") != null)
     {
         <li>
-            <a asp-controller="Order" asp-action="Status" class="dropdown-item">
+            <a asp-controller="Order" asp-action="Index" class="dropdown-item">
                 <i class="fas fa-box me-2"></i> Trạng thái đơn hàng
+            </a>
+        </li>
+        <li>
+            <a class="dropdown-item" href="#" data-bs-toggle="modal" id="openProfileModal" data-bs-target="#userProfileModal">
+                <i class="fas fa-user-edit"></i> Thông tin tài khoản
+            </a>
+        </li>
+        <li>
+            <a class="dropdown-item" href="#" data-bs-toggle="modal" id="openChangePasswordModal" data-bs-target="#changePasswordModal">
+                <i class="fas fa-key"></i> Đổi mật khẩu
             </a>
         </li>
         <li>

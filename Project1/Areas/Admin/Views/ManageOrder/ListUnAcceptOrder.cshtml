@@ -1,4 +1,4 @@
-﻿
+﻿﻿
 @using Project1.Models
 
 @{
@@ -25,13 +25,13 @@
             </div>
         </div>
     </div>
-    
+
 
     <div id="order-list">
         <!-- Danh sách hoá đơn sẽ được hiển thị tại đây -->
-        
+
     </div>
-    
+
 
 
     @* html cho form phủ *@
@@ -53,55 +53,60 @@
         text-align: center;
         margin: 0 auto
     }
+
     .row1 {
-        width: 100%; text-align: center; margin: 0 auto;
-    }
-    .col-3 {
-        padding:10px;
-        border-radius:5px 5px 5px 5px;
-        
-    }
-    .nav-status-container{
-        
-        padding:0px;
-    }
-   
-    .col-3:last-child {
-        border-right: none;        
+        width: 100%;
+        text-align: center;
+        margin: 0 auto;
     }
 
-    .ma-don-hang{
-        margin:auto 0;
-        text-align:center;
+    .col-3 {
+        padding: 10px;
+        border-radius: 5px 5px 5px 5px;
+    }
+
+    .nav-status-container {
+        padding: 0px;
+    }
+
+    .col-3:last-child {
+        border-right: none;
+    }
+
+    .ma-don-hang {
+        margin: auto 0;
+        text-align: center;
     }
 
     .image {
-        margin:auto 0;
-        padding-left:0px;
+        margin: auto 0;
+        padding-left: 0px;
     }
 
-    .logo{
-        width: 60%; height: 60%; object-fit: cover;
+    .logo {
+        width: 60%;
+        height: 60%;
+        object-fit: cover;
     }
 
-    .noi-dung-order{
+    .noi-dung-order {
         text-align: left;
-        margin:auto 0;
+        margin: auto 0;
     }
 
     .btn-huy {
-        width:100%;
-        height:100%;
-        margin:0 auto;
-    }
-
-    .btn-detail{
         width: 100%;
         height: 100%;
         margin: 0 auto;
     }
 
-    .col-12{
+    .btn-detail {
+        width: 100%;
+        height: 100%;
+        margin: 0 auto;
+    }
+
+    .col-12 {
         margin-bottom: 10px;
     }
 
@@ -122,7 +127,7 @@
 
     .modal-content {
         background-color: #fff; /* Màu nền của form */
-        margin: auto;        
+        margin: auto;
         padding: 20px; /* Khoảng cách nội dung bên trong */
         border: 1px solid #888; /* Đường viền form */
         width: 50%; /* Đặt chiều rộng form */
@@ -131,49 +136,53 @@
         overflow-y: auto; /* Thêm thanh cuộn dọc khi nội dung vượt quá chiều cao */
         box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* Hiệu ứng đổ bóng */
     }
-    
 
-    
+
+
     .content-wrapper {
         position: relative;
         z-index: 1; /* Ensure it is lower than the modal */
     }
-  
 
-    .list-in4{
+
+    .list-in4 {
         list-style-type: none;
     }
-    .close-btn {
-    color: #aaa;
-    text-align:right;
-    float:right;
-    font-size: 28px;
-    font-weight: bold;
-    cursor: pointer;
-}
 
-    .close-btn:hover, .close-btn:focus {
-        color: black;
-        text-decoration: none;
+    .close-btn {
+        color: #aaa;
+        text-align: right;
+        float: right;
+        font-size: 28px;
+        font-weight: bold;
         cursor: pointer;
     }
 
-    .link_btn{
+        .close-btn:hover, .close-btn:focus {
+            color: black;
+            text-decoration: none;
+            cursor: pointer;
+        }
+
+    .link_btn {
         color: inherit;
-        text-decoration:none;
+        text-decoration: none;
     }
 
     a:hover, a:visited, a:focus, a:active {
         color: black; /* Màu không đổi khi hover hoặc nhấp */
         text-decoration: none; /* Không gạch chân khi hover */
     }
-    .btn_accept{
-        text-align:center;
+
+    .btn_accept {
+        text-align: center;
     }
-    .chitiet{
-        margin-top:0px;
-        margin-bottom:0 ;
+
+    .chitiet {
+        margin-top: 0px;
+        margin-bottom: 0;
     }
+
     .custom-table th, .custom-table td {
         padding: 15px; /* Tăng khoảng cách giữa các cột */
         text-align: center; /* Căn giữa nội dung */
@@ -195,8 +204,8 @@
 
     .status-filter {
         display: block; /* Giúp thẻ a chiếm toàn bộ không gian cha */
-        width:100%;
-        height:100%;
+        width: 100%;
+        height: 100%;
         text-decoration: none;
         color: #000; /* Màu chữ mặc định */
         font-weight: normal; /* Font bình thường */
@@ -204,80 +213,80 @@
         border-radius: 5px;
     }
 
-    .status-filter.active {
-        background-color: #282f3a; /* Màu nền khi được chọn */
-        color: #fff; /* Màu chữ khi được chọn */
-        font-weight: bold; /* Font đậm */
-    }
+        .status-filter.active {
+            background-color: #282f3a; /* Màu nền khi được chọn */
+            color: #fff; /* Màu chữ khi được chọn */
+            font-weight: bold; /* Font đậm */
+        }
 </style>
 
 
 
 
 <script>
-    
-    //script cho form phủ
-    $(document).on('click', '.btn-detail', function() {
-    const orderId = $(this).data('order-id'); // Lấy order ID từ nút được click
-    
-    // Gửi yêu cầu lấy chi tiết đơn hàng
-    $.ajax({
-        url: `/Admin/ManageOrder/GetOrderDetail?orderId=${orderId}`,
-        type: 'GET',
-        success: function(data) {
-            $('#modal-body').html(data); // Hiển thị nội dung chi tiết
-            $('#detailModal').show(); // Hiển thị modal
-        },
-        error: function(xhr, status, error) {
-            console.error('Error:', error); // Debug lỗi
-            console.error('Response:', xhr.responseText);
-            alert('Có lỗi khi tải dữ liệu chi tiết đơn hàng.');
-        }
-    });
 
-     $(document).on('click', '.close-btn', function() {
-        $('#detailModal').hide(); // Ẩn modal
+        //script cho form phủ
+        $(document).on('click', '.btn-detail', function() {
+        const orderId = $(this).data('order-id'); // Lấy order ID từ nút được click
+
+        // Gửi yêu cầu lấy chi tiết đơn hàng
+        $.ajax({
+            url: `/Admin/ManageOrder/GetOrderDetail?orderId=${orderId}`,
+            type: 'GET',
+            success: function(data) {
+                $('#modal-body').html(data); // Hiển thị nội dung chi tiết
+                $('#detailModal').show(); // Hiển thị modal
+            },
+            error: function(xhr, status, error) {
+                console.error('Error:', error); // Debug lỗi
+                console.error('Response:', xhr.responseText);
+                alert('Có lỗi khi tải dữ liệu chi tiết đơn hàng.');
+            }
+        });
+
+         $(document).on('click', '.close-btn', function() {
+            $('#detailModal').hide(); // Ẩn modal
+        });
     });
-});
 
 </script>
 
 <script>
-    $(document).ready(function() {
-        fetchOrdersByStatus(1); // Lấy danh sách đơn hàng có statusId = 1 (Chờ xác nhận)  
-        highlightActiveNav($('.status-filter[data-status-id="1"]'));
-    });
-    // Sự kiện click vào các link lọc trạng thái
-    $('.status-filter').click(function() {
-        var statusId = $(this).data('status-id'); // Lấy status_id từ data attribute
-        highlightActiveNav($(this));
-        fetchOrdersByStatus(statusId); 
-        
-    });
-
-    function highlightActiveNav(selectedNav) {
-        $('.status-filter').removeClass('active'); // Xóa lớp active khỏi tất cả các mục
-        selectedNav.addClass('active'); // Thêm lớp active cho mục được chọn
-    }
-
-    // Hàm lấy danh sách hoá đơn theo status_id
-    function fetchOrdersByStatus(statusId) {
-    //console.log('statusId:', statusId); // Debug giá trị statusId
-        $.ajax({
-            url: '@Url.Action("ListOrderCategory", "ManageOrder", new { area = "Admin" })', // Nếu sử dụng Area
-            type: 'GET',
-            data: { statusId: statusId },
-            success: function(response) {
-                //console.log('Response:', response); // Debug phản hồi từ server
-                $('#order-list').html(response);
-            },
-            error: function(xhr, status, error) {
-                //console.error('Error:', error); // In lỗi ra console
-                //console.error('Response:', xhr.responseText); // Xem chi tiết lỗi từ server
-                alert('Có lỗi khi tải dữ liệu');
-            }
+        $(document).ready(function() {
+            fetchOrdersByStatus(1); // Lấy danh sách đơn hàng có statusId = 1 (Chờ xác nhận)
+            highlightActiveNav($('.status-filter[data-status-id="1"]'));
         });
-    
+        // Sự kiện click vào các link lọc trạng thái
+        $('.status-filter').click(function() {
+            var statusId = $(this).data('status-id'); // Lấy status_id từ data attribute
+            highlightActiveNav($(this));
+            fetchOrdersByStatus(statusId);
+
+        });
+
+        function highlightActiveNav(selectedNav) {
+            $('.status-filter').removeClass('active'); // Xóa lớp active khỏi tất cả các mục
+            selectedNav.addClass('active'); // Thêm lớp active cho mục được chọn
+        }
+
+        // Hàm lấy danh sách hoá đơn theo status_id
+        function fetchOrdersByStatus(statusId) {
+        //console.log('statusId:', statusId); // Debug giá trị statusId
+            $.ajax({
+                url: '@Url.Action("ListOrderCategory", "ManageOrder", new { area = "Admin" })', // Nếu sử dụng Area
+                type: 'GET',
+                data: { statusId: statusId },
+                success: function(response) {
+                    //console.log('Response:', response); // Debug phản hồi từ server
+                    $('#order-list').html(response);
+                },
+                error: function(xhr, status, error) {
+                    //console.error('Error:', error); // In lỗi ra console
+                    //console.error('Response:', xhr.responseText); // Xem chi tiết lỗi từ server
+                    alert('Có lỗi khi tải dữ liệu');
+                }
+        });
+
     }
-    
+
 </script>

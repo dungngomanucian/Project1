@@ -1,7 +1,9 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Project1.DTO;
 using Project1.Models;
+using Project1.Services;
 using Project1.ViewModels;
 using System.Drawing;
 using System.Net.WebSockets;
@@ -14,6 +16,12 @@ namespace Project1.Controllers
         private PizzaOnlineContext db = new PizzaOnlineContext();
         public IActionResult Index(int ?page)
         {
+            // Lấy địa chỉ từ Session
+            var selectedAddress = HttpContext.Session.GetString("SelectedAddress");
+
+            // Truyền giá trị vào ViewBag để hiển thị trong view nếu cần
+            ViewBag.SelectedAddress = selectedAddress;
+
             int pageSize = 6;
             int pageNumber = page == null || page < 0 ? 1 : page.Value;
             if (!long.TryParse(HttpContext.Session.GetString("UserId"), out long userId))
@@ -32,6 +40,12 @@ namespace Project1.Controllers
 
         public IActionResult OrderDetail(long? orderId)
         {
+            // Lấy địa chỉ từ Session
+            var selectedAddress = HttpContext.Session.GetString("SelectedAddress");
+
+            // Truyền giá trị vào ViewBag để hiển thị trong view nếu cần
+            ViewBag.SelectedAddress = selectedAddress;
+
             var order = db.TOrders
                 .Include(o => o.Customer)
                 .Include(o => o.PaymentMethod)
@@ -52,18 +66,56 @@ namespace Project1.Controllers
             return View(order);
         }
 
-        [HttpPost]
-        IActionResult UpdateCustomerFeeling(long? id, string? customerFeeling)
+        private readonly PaypalClient _paypalClient;
+
+        public OrderController(PizzaOnlineContext context, PaypalClient paypalClient)
         {
-            var order = db.TOrders.SingleOrDefault(o => o.OrderId == id);
-            if (order == null)
-            {
-                return NotFound();
-            }
-            order.CustomerFeeling = customerFeeling;
-            db.TOrders.Update(order);
-            db.SaveChanges();
-            return RedirectToAction("OrderDetail", "Order", id);
+            db = context;
+            _paypalClient = paypalClient;
         }
+
+        [Authorize]
+        [HttpPost("/Order/RefundOrder")]
+        public async Task<IActionResult> RefundOrder(string captureId, string amount, string currency = "USD")
+        {
+            if (string.IsNullOrEmpty(captureId) || string.IsNullOrEmpty(amount))
+            {
+                return BadRequest(new { Message = "Thông tin không hợp lệ." });
+            }
+
+            try
+            {
+                // Gọi RefundPayment từ PaypalClient
+                var refundResponse = await _paypalClient.RefundPayment(captureId, amount, currency);
+
+                if (refundResponse.status == "COMPLETED")
+                {
+                    // Cập nhật trạng thái đơn hàng trong cơ sở dữ liệu
+                    var order = db.TOrders.FirstOrDefault(o => o.Code == captureId);
+                    if (order != null)
+                    {
+                        order.StatusId = 6; // Cập nhật trạng thái hủy
+                        order.LastModifiedDate = DateTime.UtcNow;
+                        db.SaveChanges();
+                    }
+
+                    return Ok(new
+                    {
+                        Message = "Hoàn tiền thành công.",
+                        RefundId = refundResponse.id,
+                        RefundAmount = refundResponse.amount.value
+                    });
+                }
+                else
+                {
+                    return BadRequest(new { Message = "Hoàn tiền thất bại.", Status = refundResponse.status });
+                }
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new { Message = "Lỗi khi thực hiện hoàn tiền.", Error = ex.Message });
+            }
+        }
+
     }
 }

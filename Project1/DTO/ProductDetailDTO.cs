@@ -9,5 +9,7 @@
         public long? SizeId { get; set; }
 
         public long? CrustId { get; set; }
+        
+        public long? Number {  get; set; }
     }
 }

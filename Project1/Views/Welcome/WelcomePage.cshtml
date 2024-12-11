@@ -42,6 +42,12 @@
     #inputPickup {
         padding-left: 30px; /* Để icon không đè lên text trong input */
     }
+
+    #submit-button2{
+        padding: 10px 20px;
+        margin-left: 12.5%;
+        margin-right: 12.5%
+    }
 </style>
 
 <section class="py-5 overflow-hidden bg-primary" id="home">
@@ -65,12 +71,12 @@
                                         <div class="input-group-icon">
                                             <i class="fas fa-map-marker-alt text-danger input-box-icon"></i>
                                             <label class="visually-hidden" for="inputDelivery">Địa chỉ</label>
-                                            <input class="form-control input-box form-foodwagon-control" id="inputDelivery" type="text" placeholder="Nhập địa chỉ của bạn" />
+                                            <input class="form-control input-box form-foodwagon-control" id="inputDelivery" type="text" placeholder="Nhập địa chỉ của bạn" autocomplete="off" />
                                             <div id="suggestions"></div>
                                         </div>
                                     </div>
                                     <div class="d-grid gap-3 col-sm-auto">
-                                        <button class="btn btn-danger" id="submit-button" type="button"><a style="color: white" asp-controller="Menu" asp-action="Index">Bắt đầu đặt món</a></button>
+                                        <button onclick="window.location.href='@Url.Action("Index", "Menu")'" class="btn btn-danger" type="button">Bắt đầu đặt món</a></button>
                                     </div>
                                 </form>
                             </div>
@@ -83,7 +89,7 @@
 </section>
 
 <div class="d-grid gap-3 col-sm-auto" style="padding: 20px;">
-    <button class="btn btn-danger" id="submit-button2" type="button" style="padding: 10px 20px; margin-left: 12.5%; margin-right: 12.5%"> <a asp-controller="Menu" asp-action="Index" style="color: white">Xem danh sách món ăn</a></button>
+    <button onclick="window.location.href='@Url.Action("Index", "Menu")'" class="btn btn-danger" id="submit-button2" type="button">Xem danh sách món ăn</button>
 </div>
 
 <script>
