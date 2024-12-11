@@ -5,6 +5,16 @@
     Layout = "~/Views/Shared/_LayoutLogin.cshtml";
 }
 
+@if (TempData["Content"] != null)
+{
+    <script src="/lib/jquery//dist/jquery.js"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
+    <script type="text/javascript">
+
+        toastr.error('@TempData["Content"]', '@TempData["Title"]');
+    </script>
+}
+
 <div class="page-wrapper" id="main-wrapper" data-layout="vertical" data-navbarbg="skin6" data-sidebartype="full"
      data-sidebar-position="fixed" data-header-position="fixed">
     <div class="position-relative overflow-hidden radial-gradient min-vh-100 d-flex align-items-center justify-content-center">
