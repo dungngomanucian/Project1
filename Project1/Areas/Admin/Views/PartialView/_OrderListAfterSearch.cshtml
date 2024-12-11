@@ -14,6 +14,7 @@
                 <th>Phương Thức Thanh Toán</th>
                 <th>Tổng Tiền</th>
                 <th>Đánh Giá</th>
+                <th>Xem thêm</th>
             </tr>
         </thead>
         <tbody>
@@ -26,10 +27,20 @@
                     <td>@order.PaymentMethod?.Name</td>
                     <td>@order.TotalPrice</td>
                     <td>@order.CustomerFeeling</td>
+                        <td>
+                        <button type="button" class="btn btn-light btn-sm" onclick="showForm(@order.OrderId)"><i class="mdi mdi-dots-vertical"></i></button>
+                        </td>
                 </tr>
             }
         </tbody>
     </table>
+    <div id="overlayForm" class="overlay-form">
+        <div class="overlay-content">
+            <div id="formContent">
+                <!-- Nội dung chi tiết sẽ được load ở đây -->
+            </div>
+        </div>
+    </div>
     <br />
     <div>
         <!-- Phân trang -->

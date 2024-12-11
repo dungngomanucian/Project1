@@ -67,6 +67,7 @@
                                     <th>Phương Thức Thanh Toán</th>
                                     <th>Tổng Tiền</th>
                                     <th>Đánh Giá</th>
+                                    <th>Xem thêm</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -79,10 +80,20 @@
                                         <td>@order.PaymentMethod?.Name</td>
                                         <td>@order.TotalPrice</td>
                                         <td>@order.CustomerFeeling</td>
+                                        <td>
+                                            <button type="button" class="btn btn-light btn-sm " onclick="showForm(@order.OrderId)" ><i class="mdi mdi-dots-vertical"></i></button>
+                                        </td>
                                     </tr>
                                 }
                             </tbody>
                         </table>
+                        <div id="overlayForm" class="overlay-form">
+                            <div class="overlay-content">
+                                <div id="formContent">
+                                    <!-- Nội dung chi tiết sẽ được load ở đây -->
+                                </div>
+                            </div>
+                        </div>
                     </div>
                     <div id="orderListContainer">  
                     </div>
@@ -112,6 +123,63 @@
         margin-bottom:0px;
         text-align:center;
     }
+    /* Overlay nền */
+    .overlay-form {
+        display: none; /* Ẩn mặc định */
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0, 0, 0, 0.5); /* Màu nền đen mờ */
+        z-index: 1000;
+    }
+
+    /* Nội dung form */
+    .overlay-content {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        background-color: white;
+        padding: 20px;
+        border-radius: 10px;
+        width: 50%; /* Độ rộng form */
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    }
+
+    .chitiet {
+        margin-top: 0px;
+        margin-bottom: 0;
+    }
+    /* Nút đóng form */
+
+    .close-btn {
+        color: red;
+        text-align: right;
+        float: right;
+        font-size: 28px;
+        font-weight: bold;
+        cursor: pointer;
+    }
+    .custom-table th, .custom-table td {
+        padding: 15px; /* Tăng khoảng cách giữa các cột */
+        text-align: center; /* Căn giữa nội dung */
+    }
+
+    .custom-table th {
+        background-color: #f5f5f5; /* Màu nền cho tiêu đề */
+    }
+
+    .custom-table img {
+        display: block;
+        margin: 0 auto; /* Căn giữa hình ảnh */
+    }
+
+    .custom-table {
+        border-collapse: collapse; /* Gộp đường viền ô */
+        width: 100%; /* Tăng độ rộng toàn bảng */
+    }
 </style>
 
 
@@ -128,7 +196,7 @@
             }
 
             $.ajax({
-                url: '@Url.Action("searchOrder", "HomeAdmin", new { area = "Admin" })', // Thay "YourControllerName" bằng tên Controller
+                url: '@Url.Action("searchOrder", "ManageOrder", new { area = "Admin" })', // Thay "YourControllerName" bằng tên Controller
                 type: 'GET',
                 data: { page: page, search_Keyword: searchKeyword },
                 success: function (response) {
@@ -168,7 +236,7 @@
             const page = 1; // Reset về trang đầu tiên khi lọc
 
             $.ajax({
-                url: '@Url.Action("FilterOrder", "HomeAdmin", new { area = "Admin" })',
+                url: '@Url.Action("FilterOrder", "ManageOrder", new { area = "Admin" })',
                 type: 'GET',
                 data: {
                     filterType: filterType,
@@ -199,5 +267,41 @@
         });
     });
 </script>
+<script>
+    function showForm(orderId) {
+        // Hiển thị overlay form
+        document.getElementById('overlayForm').style.display = 'block';
 
- 
+        // Load chi tiết đơn hàng qua AJAX (nếu cần thiết)
+        const formContent = document.getElementById('formContent');
+        formContent.innerHTML = `<p>Đang tải thông tin hóa đơn có mã: ${orderId}...</p>`; // Thông báo tạm thời
+        setTimeout(() => {
+            formContent.innerHTML = `
+                    <p><strong>Mã Hoá Đơn:</strong> ${orderId}</p>
+                    <p>Chi tiết đơn hàng sẽ được load từ server tại đây...</p>
+                `;
+            $.ajax({
+                url: `/Admin/ManageOrder/GetOrderDetail?orderId=${orderId}`,
+                type: 'GET',
+                success: function (data) {
+                    $('#formContent').html(data); // Hiển thị nội dung chi tiết
+
+                },
+                error: function (xhr, status, error) {
+                    console.error('Error:', error); // Debug lỗi
+                    console.error('Response:', xhr.responseText);
+                    alert('Có lỗi khi tải dữ liệu chi tiết đơn hàng.');
+                }
+            });
+        }, 1500);
+
+
+        $(document).on('click', '.close-btn', function () {
+            $('#overlayForm').hide(); // Ẩn modal
+        });
+        
+    }
+
+   
+
+</script>

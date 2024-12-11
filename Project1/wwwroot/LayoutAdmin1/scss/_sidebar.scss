@@ -140,20 +140,12 @@
     &.sub-menu {
       margin-bottom: 0;
       margin-top:0;
-      list-style: none;
+      list-style: none; 
       padding: $sidebar-submenu-padding;
 
       .nav-item {
         padding: 0;
-        &::before {
-          content: '';
-          position: absolute;
-          width: 5px;
-          height: 5px;
-          border-radius: 50%;
-          background: #000;
-          margin-top: 15px;
-        }
+        
         .nav-link {
           color: $sidebar-light-submenu-color;
           padding: $sidebar-submenu-item-padding;

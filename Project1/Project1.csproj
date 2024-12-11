@@ -23,11 +23,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Areas\Admin\Controllers\" />
-    <Folder Include="Areas\Admin\Models\" />
-  </ItemGroup>
-
-  <ItemGroup>
     <None Include="wwwroot\LayoutAdmin1\.DS_Store" />
     <None Include="wwwroot\LayoutAdmin1\fonts\.DS_Store" />
     <None Include="wwwroot\LayoutAdmin1\fonts\Roboto\.DS_Store" />
@@ -46,6 +41,13 @@
     <None Include="wwwroot\LayoutAdmin1\scss\components\.DS_Store" />
     <None Include="wwwroot\LayoutAdmin1\scss\mixins\.DS_Store" />
     <None Include="wwwroot\LayoutAdmin1\vendors\.DS_Store" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Areas\Admin\Data\" />
+    <Folder Include="Areas\Admin\Models\" />
+    <Folder Include="Areas\Admin\Views\ManageCombo\" />
+    <Folder Include="Areas\Admin\Views\ManageUser\" />
   </ItemGroup>
 
 </Project>

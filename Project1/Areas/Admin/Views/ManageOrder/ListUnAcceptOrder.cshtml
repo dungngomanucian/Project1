@@ -222,7 +222,7 @@
     
     // Gửi yêu cầu lấy chi tiết đơn hàng
     $.ajax({
-        url: `/Admin/HomeAdmin/GetOrderDetail?orderId=${orderId}`,
+        url: `/Admin/ManageOrder/GetOrderDetail?orderId=${orderId}`,
         type: 'GET',
         success: function(data) {
             $('#modal-body').html(data); // Hiển thị nội dung chi tiết
@@ -264,7 +264,7 @@
     function fetchOrdersByStatus(statusId) {
     //console.log('statusId:', statusId); // Debug giá trị statusId
         $.ajax({
-            url: '@Url.Action("ListOrderCategory", "HomeAdmin", new { area = "Admin" })', // Nếu sử dụng Area
+            url: '@Url.Action("ListOrderCategory", "ManageOrder", new { area = "Admin" })', // Nếu sử dụng Area
             type: 'GET',
             data: { statusId: statusId },
             success: function(response) {
