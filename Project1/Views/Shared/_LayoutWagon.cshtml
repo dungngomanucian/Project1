@@ -124,6 +124,7 @@
     @{
         var userProfileModel = new Project1.ViewModels.UserProfileViewModel();
         var changePasswordModel = new Project1.ViewModels.ChangePasswordViewModel();
+        
     }
     @await Html.PartialAsync("_UserProfileModal", userProfileModel)
     @await Html.PartialAsync("_ChangePasswordModal", changePasswordModel)

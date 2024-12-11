@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Authorization;
 using Project1.Models.Authentication;
 using System.Net.WebSockets;
 using MailKit.Search;
+using System.Text.RegularExpressions;
 
 namespace Project1.Controllers
 {
@@ -99,14 +100,15 @@ namespace Project1.Controllers
         [HttpPost]
         public IActionResult Checkout(CheckoutVM model, string payment = "COD")
         {
+            long customerId = GetCustomerId();
+            PrepareCheckoutViewBag(customerId);
+
             if (ModelState.IsValid)
             {
                 if (payment == "VNPay")
                 {
                     return ProcessVNPay(model);
                 }
-
-                long customerId = GetCustomerId();
 
                 var khachHang = new TUser();
                 if (ViewBag.CanEdit == false)
@@ -132,6 +134,24 @@ namespace Project1.Controllers
 
                 return RedirectToAction("Index", "Order");
             }
+
+            //hien thi span validate
+            if (!ModelState.IsValid)
+            {
+                if (string.IsNullOrEmpty(model.HoTen))
+                {
+                    ViewBag.HoTenError = "Họ và tên không được để trống";
+                }
+                if (string.IsNullOrEmpty(model.DiaChi))
+                {
+                    ViewBag.DiaChiError = "Địa chỉ không được để trống";
+                }
+                if (string.IsNullOrEmpty(model.DienThoai) || !Regex.IsMatch(model.DienThoai, @"^\d{10}$"))
+                {
+                    ViewBag.DienThoaiError = "Số điện thoại phải có đủ 10 chữ số";
+                }
+            }
+
             return View(Cart);
         }
 
@@ -180,6 +200,17 @@ namespace Project1.Controllers
         }
 
         #region Paypal payment
+        
+        [HttpPost("/Cart/SaveToSession")]
+        public IActionResult SaveToSession([FromBody] CheckoutVM model)
+        {
+            HttpContext.Session.SetString("HoTen", model.HoTen ?? "");
+            HttpContext.Session.SetString("DiaChi", model.DiaChi ?? "");
+            HttpContext.Session.SetString("DienThoai", model.DienThoai ?? "");
+            HttpContext.Session.SetString("GhiChu", model.GhiChu ?? "");
+
+            return Ok(new { Message = "Session updated successfully" });
+        }
         [Authorize]
         [HttpPost("/Cart/create-paypal-order")]
         public async Task<IActionResult> CreatePaypalOrder(CancellationToken cancellationToken)
@@ -300,7 +331,8 @@ namespace Project1.Controllers
             var user = db.TUsers.SingleOrDefault(u => u.UserId == userId);
 
             ViewBag.CanEdit = user == null ? true : false; // CanEdit sẽ là true nếu không có thông tin user.
-            ViewBag.HoTen = user?.Nickname ?? string.Empty;
+            //ViewBag.HoTen = user?.Nickname ?? string.Empty;
+            ViewBag.HoTen = $"{user?.LastName} {user?.FirstName}".Trim();
             ViewBag.DiaChi = HttpContext.Session.GetString("SelectedAddress");
             ViewBag.DienThoai = user?.PhoneNumber ?? string.Empty;
         }

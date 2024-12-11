@@ -156,6 +156,7 @@
                                 <label class="form-label my-3">Người nhận hàng<sup>*</sup></label>
                                 <input type="text" name="HoTen" id="HoTen" class="form-control"
                                        value="@ViewBag.HoTen" @(ViewBag.CanEdit ? "" : "readonly") required>
+                                <span class="text-danger">@ViewBag.HoTenError</span>
                             </div>
 
                             <!-- Địa chỉ nhận hàng -->
@@ -163,6 +164,7 @@
                                 <label class="form-label my-3">Địa chỉ nhận hàng<sup>*</sup></label>
                                 <input type="text" name="DiaChi" id="DiaChi" class="form-control"
                                        value="@ViewBag.DiaChi" @(ViewBag.CanEdit ? "" : "readonly") required>
+                                <span class="text-danger">@ViewBag.DiaChiError</span>
                             </div>
 
                             <!-- Điện thoại -->
@@ -170,11 +172,11 @@
                                 <label class="form-label my-3">Điện thoại<sup>*</sup></label>
                                 <input type="text" name="DienThoai" id="DienThoai" class="form-control"
                                        value="@ViewBag.DienThoai" @(ViewBag.CanEdit ? "" : "readonly") required>
+                                <span class="text-danger">@ViewBag.DienThoaiError</span>
                             </div>
-
                             <!-- Ghi chú -->
                             <div class="form-item mt-3">
-                                <textarea name="GhiChu" class="form-control" spellcheck="false" cols="30" rows="7" placeholder="Ghi chú cho đơn hàng"></textarea>
+                                <textarea id="GhiChu" name="GhiChu" class="form-control" spellcheck="false" cols="30" rows="7" placeholder="Ghi chú cho đơn hàng"></textarea>
                             </div>
                         </div>
                     </div>
@@ -412,4 +414,29 @@
         // Gắn sự kiện thay đổi trạng thái checkbox
         canEditCheckbox.addEventListener("change", toggleFieldsState);
     });
+
+    document.querySelectorAll('input').forEach(input => {
+        input.addEventListener('input', function () {
+            const model = {
+                HoTen: document.getElementById('HoTen').value,
+                DiaChi: document.getElementById('DiaChi').value,
+                DienThoai: document.getElementById('DienThoai').value,
+                GhiChu: document.getElementById('GhiChu').value
+            };
+
+            // Gửi dữ liệu đến server khi có thay đổi
+            fetch('/Cart/SaveToSession', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(model)
+            }).then(response => {
+                if (response.ok) {
+                    console.log("Session updated successfully");
+                }
+            });
+        });
+    });
+
 </script>
