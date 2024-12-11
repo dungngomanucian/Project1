@@ -33,9 +33,7 @@ data-sidebar-position="fixed" data-header-position="fixed">
                                     <div class="form-check">
                                         <input asp-for="RememberMe" style="background-color: #ffffff; border-color: #f8742c"
                                         class="form-check-input primary"
-                                        type="checkbox"
-                                        value=""
-                                        id="rememberMe"
+                                        type="checkbox" id="rememberMe"
                                         onchange="this.style.backgroundColor = this.checked ? '#f8742c' : '#ffffff'">
                                         <label class="form-check-label text-dark" for="rememberMe">
                                             Ghi nhớ đăng nhập
@@ -47,7 +45,7 @@ data-sidebar-position="fixed" data-header-position="fixed">
                                 </a>
                             }
                             <p class="text-center" style="color: black">Hoặc đăng nhập với</p>
-                            <a style="background-color: #ffffff; border-color: #f8742c; color: #f8742c" asp-controller="Login" asp-action="LoginGoogle" class="btn btn-primary w-100 py-8 fs-4 mb-4 rounded-2">
+                            <a asp-controller="Login" asp-action="LoginGoogle" style="background-color: #ffffff; border-color: #f8742c; color: #f8742c" class="btn btn-primary w-100 py-8 fs-4 mb-4 rounded-2">
                                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-google" viewBox="0 0 16 16">
                                     <path d="M15.545 6.558a9.42 9.42 0 0 1 .139 1.626c0 2.434-.87 4.492-2.384 5.885h.002C11.978 15.292 10.158 16 8 16A8 8 0 1 1 8 0a7.689 7.689 0 0 1 5.352 2.082l-2.284 2.284A4.347 4.347 0 0 0 8 3.166c-2.087 0-3.86 1.408-4.492 3.304a4.792 4.792 0 0 0 0 3.063h.003c.635 1.893 2.405 3.301 4.492 3.301 1.078 0 2.004-.276 2.722-.764h-.003a3.702 3.702 0 0 0 1.599-2.431H8v-3.08h7.545z" />
 
@@ -71,7 +69,7 @@ data-sidebar-position="fixed" data-header-position="fixed">
     <script src="/lib/jquery//dist/jquery.js"></script>
     <script src="//cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
     <script type="text/javascript">
-        @if (TempData["Title"].ToString() == "Thành công")
+        @if (TempData["Type"].ToString() == "Success")
         {
             @:toastr.success('@TempData["Content"]', '@TempData["Title"]')
         }

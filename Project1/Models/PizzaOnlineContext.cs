@@ -46,7 +46,7 @@ public partial class PizzaOnlineContext : DbContext
     public virtual DbSet<TVoucher> TVouchers { get; set; }
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-        => optionsBuilder.UseSqlServer("Data Source=DESKTOP-8OO0QDM;Initial Catalog=PizzaOnline;Integrated Security=True;Connect Timeout=30;Encrypt=True;Trust Server Certificate=True;Application Intent=ReadWrite;Multi Subnet Failover=False");
+    => optionsBuilder.UseSqlServer("Data Source=LAPTOP-CESR45S5\\SQLEXPRESS;Initial Catalog=PizzaOnline;Integrated Security=True;Connect Timeout=30;Encrypt=True;Trust Server Certificate=True;Application Intent=ReadWrite;Multi Subnet Failover=False");
 
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -142,7 +142,7 @@ public partial class PizzaOnlineContext : DbContext
                 .HasColumnName("Order_ID");
             entity.Property(e => e.Address).HasMaxLength(200);
             entity.Property(e => e.Code)
-                .HasMaxLength(15)
+                .HasMaxLength(50)
                 .IsUnicode(false);
             entity.Property(e => e.CreatedBy)
                 .HasMaxLength(20)
@@ -492,13 +492,13 @@ public partial class PizzaOnlineContext : DbContext
                 .HasMaxLength(20)
                 .HasColumnName("Last_name");
             entity.Property(e => e.Nickname).HasMaxLength(25);
-            entity.Property(e => e.Password)
-                .HasMaxLength(10)
-                .IsUnicode(false);
+            entity.Property(e => e.Password).HasMaxLength(100);
             entity.Property(e => e.PhoneNumber)
                 .HasMaxLength(10)
                 .IsUnicode(false)
                 .IsFixedLength();
+            entity.Property(e => e.ResetToken).HasMaxLength(100);
+            entity.Property(e => e.ResetTokenExpiry).HasColumnType("datetime");
             entity.Property(e => e.RoleId).HasColumnName("Role_ID");
 
             entity.HasOne(d => d.Role).WithMany(p => p.TUsers)

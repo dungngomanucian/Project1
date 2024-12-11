@@ -331,7 +331,8 @@ namespace Project1.Controllers
             var user = db.TUsers.SingleOrDefault(u => u.UserId == userId);
 
             ViewBag.CanEdit = user == null ? true : false; // CanEdit sẽ là true nếu không có thông tin user.
-            ViewBag.HoTen = user?.Nickname ?? string.Empty;
+            //ViewBag.HoTen = user?.Nickname ?? string.Empty;
+            ViewBag.HoTen = $"{user?.LastName} {user?.FirstName}".Trim();
             ViewBag.DiaChi = HttpContext.Session.GetString("SelectedAddress");
             ViewBag.DienThoai = user?.PhoneNumber ?? string.Empty;
         }

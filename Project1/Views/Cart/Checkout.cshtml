@@ -51,6 +51,8 @@
     }
 </style>
 
+<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css">
+
 <div class="container-xxl position-relative bg-white d-flex p-0">
     <!-- Content Start -->
     <div class="content" style="margin: 0!important; width: 100%">
@@ -288,6 +290,8 @@
     <!-- Content End -->
 </div>
 
+<script src="/lib/jquery//dist/jquery.js"></script>
+<script src="//cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
 <script src="https://sandbox.paypal.com/sdk/js?client-id=@ViewBag.PaypalClientId"></script>
 <script>
     // Lấy tất cả các checkbox thuộc nhóm thanh toán
@@ -388,7 +392,7 @@
 
     // Hàm hiển thị toast thông báo
     function showToast(message) {
-        
+        toastr.warning(message, "Cảnh báo");
     }
 
     // Đảm bảo trạng thái readonly của các trường input khi checkbox thay đổi

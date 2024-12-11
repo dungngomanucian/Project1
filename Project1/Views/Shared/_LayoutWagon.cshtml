@@ -22,6 +22,7 @@
     <link rel="icon" type="image/png" sizes="16x16" href="../1LayoutIndex/assets/img/favicons/favicon-16x16.png">
     <link rel="shortcut icon" type="image/x-icon" href="../1LayoutIndex/assets/img/favicons/favicon.ico">
     <link rel="manifest" href="../1LayoutIndex/assets/img/favicons/manifest.json">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
     <meta name="msapplication-TileImage" content="../1LayoutIndex/assets/img/favicons/mstile-150x150.png">
     <meta name="theme-color" content="#ffffff">
 
@@ -120,8 +121,13 @@
     <!-- ===============================================-->
     <!--    End of Main Content-->
     <!-- ===============================================-->
-
-
+    @{
+        var userProfileModel = new Project1.ViewModels.UserProfileViewModel();
+        var changePasswordModel = new Project1.ViewModels.ChangePasswordViewModel();
+        
+    }
+    @await Html.PartialAsync("_UserProfileModal", userProfileModel)
+    @await Html.PartialAsync("_ChangePasswordModal", changePasswordModel)
 
 
     <!-- ===============================================-->
@@ -132,7 +138,8 @@
     <script src="../1LayoutIndex/vendors/is/is.min.js"></script>
     <script src="../1LayoutIndex/vendors/fontawesome/all.min.js"></script>
     <script src="../1LayoutIndex/assets/js/theme.js"></script>
-
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="~/js/user-profile.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Source+Sans+Pro:wght@200;300;400;600;700;900&amp;display=swap" rel="stylesheet">
   </body>
 

@@ -1,0 +1,49 @@
+﻿<div class="modal fade" id="userProfileModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Thông tin tài khoản</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <form id="userProfileForm">
+                    <input type="hidden" id="UserId" name="UserId" />
+
+                    <div class="mb-3">
+                        <label for="FirstName" class="form-label">Họ</label>
+                        <input type="text" class="form-control" id="FirstName" name="FirstName" />
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="LastName" class="form-label">Tên</label>
+                        <input type="text" class="form-control" id="LastName" name="LastName" />
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="Nickname" class="form-label">Biệt danh</label>
+                        <input type="text" class="form-control" id="Nickname" name="Nickname" />
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="Email" class="form-label">Email</label>
+                        <input type="email" class="form-control" id="Email" name="Email" />
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="PhoneNumber" class="form-label">Số điện thoại</label>
+                        <input type="tel" class="form-control" id="PhoneNumber" name="PhoneNumber" />
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="Address" class="form-label">Địa chỉ</label>
+                        <textarea class="form-control" id="Address" name="Address"></textarea>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
+                <button type="button" class="btn btn-primary" id="saveProfileBtn" data-bs-dismiss="modal">Lưu thay đổi</button>
+            </div>
+        </div>
+    </div>
+</div>
