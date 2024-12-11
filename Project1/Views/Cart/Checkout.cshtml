@@ -10,10 +10,45 @@
         border: none;
     }
 
-        #CanEdit:checked, #COD:checked, #VNPay:checked, #Paypal:checked {
-            background-color: #FF6600 !important; /* Nền cam khi được tích */
-        }
+    #CanEdit:checked, #COD:checked, #VNPay:checked, #Paypal:checked {
+        background-color: #FF6600 !important; /* Nền cam khi được tích */
+    }
 
+    /* Đảm bảo hình ảnh luôn hiển thị */
+    .table img {
+        display: block; /* Đảm bảo hình ảnh không bị ẩn */
+        max-width: 100%; /* Giữ hình ảnh tỉ lệ chính xác */
+        height: auto;
+        margin: 0 auto; /* Canh giữa hình ảnh trong ô */
+    }
+
+    /* Đảm bảo bảng có thanh cuộn khi vượt kích thước */
+    .custom-scroll {
+        overflow-x: auto; /* Cuộn ngang nếu bảng lớn hơn khung nhìn */
+        overflow-y: auto; /* Cuộn dọc nếu cần */
+        max-height: 400px; /* Tùy chọn giới hạn chiều cao bảng */
+    }
+
+    /* Tránh xuống dòng nội dung */
+    .table {
+        white-space: nowrap;
+    }
+
+    /* Đặt kích thước cố định cho cột hình ảnh */
+    .table th:first-child,
+    .table td:first-child {
+        width: 80px; /* Kích thước cố định cho cột hình ảnh */
+        min-width: 80px;
+        text-align: center; /* Canh giữa nội dung cột */
+    }
+
+    /* Loại bỏ viền đen ở nút thanh toán */
+    /* Loại bỏ outline và border khi focus vào button */
+    button:focus, input:focus {
+        outline: none !important; /* Loại bỏ outline */
+        border: none !important; /* Loại bỏ border */
+        box-shadow: none !important; /* Loại bỏ shadow */
+    }
 </style>
 
 <div class="container-xxl position-relative bg-white d-flex p-0">
@@ -65,11 +100,11 @@
                 <div class="d-flex align-items-center justify-content-between mb-4">
                     <h6 class="mb-0" style="font-size:150%!important; font-family: 'Poppins', sans-serif!important;">CHI TIẾT ĐƠN HÀNG</h6>
                 </div>
-                <div class="table-responsive">
+                <div class="table-responsive custom-scroll">
                     <table class="table text-center align-middle table-bordered table-hover mb-0" style="font-size: 110%!important">
                         <thead>
                             <tr class="text-dark">
-                                <th scope="col"></th>
+                                <th scope="col" style="width: 80px;">Hình ảnh</th> <!-- Đặt chiều rộng cố định cho hình ảnh -->
                                 <th scope="col">Sản phẩm</th>
                                 <th scope="col">Đơn giá</th>
                                 <th scope="col">Số lượng</th>
@@ -81,7 +116,10 @@
                             {
                                 <tr>
                                     <td>
-                                        <img src="@Url.Content("../ImagesProduct/" + item.Image)" class="img-fluid rounded" style="width: 60px; height: 60px;" alt="@item.Name">
+                                        <img src="@Url.Content("../ImagesProduct/" + item.Image)"
+                                             class="img-fluid rounded"
+                                             style="width: 60px; height: 60px;"
+                                             alt="@item.Name">
                                     </td>
                                     <td>@item.Name</td>
                                     <td>@item.Price đ</td>
@@ -251,6 +289,30 @@
 
 <script src="https://sandbox.paypal.com/sdk/js?client-id=@ViewBag.PaypalClientId"></script>
 <script>
+    // Lấy tất cả các checkbox thuộc nhóm thanh toán
+    const checkboxes = document.querySelectorAll('.payment-method');
+
+    // Xử lý checkbox để đảm bảo chỉ một cái được chọn và không cho phép uncheck hết
+    checkboxes.forEach(checkbox => {
+        checkbox.addEventListener('change', function () {
+            if (this.checked) {
+                // Bỏ chọn tất cả checkbox khác
+                checkboxes.forEach(cb => {
+                    if (cb !== this) {
+                        cb.checked = false;
+                    }
+                });
+            } else {
+                // Nếu không có checkbox nào được chọn, giữ checkbox này được chọn
+                const checkedCount = Array.from(checkboxes).filter(cb => cb.checked).length;
+                if (checkedCount === 0) {
+                    this.checked = true;
+                }
+            }
+        });
+    });
+
+    // Xử lý sự kiện thay đổi của checkbox để hiển thị/ẩn nút Paypal
     document.querySelectorAll('input[name="method"]').forEach(radio => {
         radio.addEventListener('change', function () {
             const submitbutton = document.getElementById('submitButton');
@@ -269,6 +331,8 @@
             }
         });
     });
+
+    // Hàm render nút PayPal
     function renderPaypalButton() {
         const paypalContainer = document.getElementById('paypal-button-container');
         // Làm sạch container để không tạo thêm nhiều nút PayPal
@@ -303,6 +367,30 @@
             }
         }).render('#paypal-button-container');
     }
+
+    // Kiểm tra khi nhấn nút Thanh toán
+    document.getElementById('sbmPP').addEventListener('click', function (event) {
+        // Kiểm tra xem có checkbox nào được chọn không
+        const isAnyChecked = Array.from(checkboxes).some(checkbox => checkbox.checked);
+
+        if (!isAnyChecked) {
+            // Nếu không có checkbox nào được chọn, ngăn hành động tiếp theo
+            event.preventDefault();
+
+            // Hiển thị thông báo dạng toast
+            showToast('Vui lòng chọn một phương thức thanh toán trước khi tiếp tục!');
+        } else {
+            // Nếu có checkbox được chọn, thực hiện hành động tiếp theo
+            document.getElementById('submitButton').click(); // Giả lập click để gửi form
+        }
+    });
+
+    // Hàm hiển thị toast thông báo
+    function showToast(message) {
+        
+    }
+
+    // Đảm bảo trạng thái readonly của các trường input khi checkbox thay đổi
     document.addEventListener("DOMContentLoaded", function () {
         const canEditCheckbox = document.getElementById("CanEdit");
         const fields = ["HoTen", "DiaChi", "DienThoai"].map(id => document.getElementById(id));
@@ -314,27 +402,11 @@
                 field.readOnly = !isEditable;
             });
         }
+
         // Cập nhật trạng thái khi trang được load
         toggleFieldsState();
+
         // Gắn sự kiện thay đổi trạng thái checkbox
         canEditCheckbox.addEventListener("change", toggleFieldsState);
-    });
-
-    //Xử lý checkbox
-    // Lấy tất cả các checkbox thuộc nhóm thanh toán
-    const checkboxes = document.querySelectorAll('.payment-method');
-
-    // Lắng nghe sự kiện change cho từng checkbox
-    checkboxes.forEach(checkbox => {
-        checkbox.addEventListener('change', function () {
-            if (this.checked) {
-                // Bỏ chọn tất cả checkbox khác
-                checkboxes.forEach(cb => {
-                    if (cb !== this) {
-                        cb.checked = false;
-                    }
-                });
-            }
-        });
     });
 </script>
