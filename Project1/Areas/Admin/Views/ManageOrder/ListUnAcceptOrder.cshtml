@@ -6,26 +6,53 @@
     Layout = "~/Areas/Admin/Views/Shared/_LayoutAdmin1.cshtml";
 }
 
+<style>
+    .row {
+        display: flex;
+        flex-wrap: nowrap; /* Không cho xuống dòng */
+    }
+
+    .nav-status-container {
+        flex: 1; /* Mỗi thẻ chiếm đều chiều rộng */
+        display: flex;
+        justify-content: center; /* Căn giữa theo chiều ngang */
+        align-items: center; /* Căn giữa theo chiều dọc */
+        text-align: center; /* Căn giữa nội dung bên trong */
+        padding: 10px; /* Tạo không gian bên trong thẻ */
+    }
+
+    .status-filter {
+        display: inline-block; /* Đảm bảo nút bên trong giữ định dạng */
+        width: 100%; /* Tùy chọn: Chiều rộng bằng khối cha */
+        height: 100%; /* Tùy chọn: Chiều cao bằng khối cha */
+    }
+</style>
+
 <div class="content-wrapper">
     <div style="width: 100%; text-align: center; margin: 0 auto"> <h2>Danh sách đơn hàng mới  </h2> </div>
     <br />
     <div class="card">
         <div class="row">
-            <div class="col-3 nav-status-container">
-                <a href="javascript:void(0);" class="status-filter" data-status-id="1">Chờ xác nhận</a>
+            <div class="nav-status-container">
+                <a href="javascript:void(0);" class="status-filter" data-status-id="1">Đang xác nhận</a>
             </div>
-            <div class="col-3 nav-status-container">
+            <div class="nav-status-container">
                 <a href="javascript:void(0);" class="status-filter" data-status-id="2">Đã xác nhận</a>
             </div>
-            <div class="col-3 nav-status-container">
-                <a href="javascript:void(0);" class="status-filter" data-status-id="3">Đang làm</a>
+            <div class="nav-status-container">
+                <a href="javascript:void(0);" class="status-filter" data-status-id="3">Đang làm món ăn</a>
             </div>
-            <div class="col-3 nav-status-container">
-                <a href="javascript:void(0);" class="status-filter" data-status-id="4">Đang giao</a>
+            <div class="nav-status-container">
+                <a href="javascript:void(0);" class="status-filter" data-status-id="4">Đang giao hàng</a>
+            </div>
+            <div class="nav-status-container">
+                <a href="javascript:void(0);" class="status-filter" data-status-id="5">Giao hàng thành công</a>
+            </div>
+            <div class="nav-status-container">
+                <a href="javascript:void(0);" class="status-filter" data-status-id="6">Đơn hàng hủy</a>
             </div>
         </div>
     </div>
-    
 
     <div id="order-list">
         <!-- Danh sách hoá đơn sẽ được hiển thị tại đây -->
