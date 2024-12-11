@@ -4,6 +4,7 @@ using Project1.Models;
 using Microsoft.AspNetCore.Authentication.Google;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using System.Security.Claims;
+using System.Net.WebSockets;
 namespace Project1.Controllers
 {
     public class LoginController : Controller
@@ -42,6 +43,7 @@ namespace Project1.Controllers
                 }
                 return RedirectToAction("Index", "Menu");
             }
+
             if (HttpContext.Session.GetString("Email") == null)
             {
                 return View();
@@ -61,19 +63,37 @@ namespace Project1.Controllers
 
                 if (u != null)
                 {
-                    if(BCrypt.Net.BCrypt.Verify(user.Password, u.Password))
+                    if (u.GoogleId != null)
+                    {
+                        TempData["Title"] = "Thất bại";
+                        TempData["Content"] = "Email này đã được sử dụng cho tài khoản Google!"; 
+                        TempData["Type"] = "Error";
+                        return View();
+                    }
+
+                    // Kiểm tra password
+                    if (string.IsNullOrEmpty(user.Password) || string.IsNullOrEmpty(u.Password))
+                    {
+                        TempData["Title"] = "Thất bại";
+                        TempData["Content"] = "Mật khẩu không hợp lệ.";
+                        TempData["Type"] = "Error";
+                        return View();
+                    }
+
+                    if (BCrypt.Net.BCrypt.Verify(user.Password, u.Password))
                     {
                         HttpContext.Session.SetString("Email", u.Email.ToString());
                         HttpContext.Session.SetString("UserId", u.UserId.ToString());
                         ViewData["UserId"] = this.User;
                         TempData["Title"] = "Thành công";
                         TempData["Content"] = "Đăng nhập thành công.";
+                        TempData["Type"] = "Success";
                         var claims = new List<Claim>
-                    {
-                        new Claim(ClaimTypes.Name, u.Email),
-                        new Claim(ClaimTypes.Role, u.RoleId.ToString()),
-                        new Claim("UserId", u.UserId.ToString())
-                    };
+                        {
+                            new Claim(ClaimTypes.Name, u.Email),
+                            new Claim(ClaimTypes.Role, u.RoleId.ToString()),
+                            new Claim("UserId", u.UserId.ToString())
+                        };
 
                         var claimsIdentity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
                         var clainsPricipal = new ClaimsPrincipal(claimsIdentity);
@@ -89,7 +109,6 @@ namespace Project1.Controllers
                          await HttpContext.SignInAsync(clainsPricipal, authProperties);*/
 
                         // Cấu hình cookie authentication
-                        Console.WriteLine($"RememberMe value: {user.RememberMe}");
                         var authProperties = new AuthenticationProperties
                         {
                             IsPersistent = user.RememberMe, // Kiểm tra null
@@ -97,9 +116,6 @@ namespace Project1.Controllers
                                 ? DateTimeOffset.UtcNow.AddDays(7)  // Nếu remember me = true, cookie tồn tại 7 ngày
                                 : DateTimeOffset.UtcNow.AddMinutes(15) // Nếu không, cookie tồn tại 30 phút
                         };
-
-                        Console.WriteLine($"Auth Properties - IsPersistent: {authProperties.IsPersistent}");
-                        Console.WriteLine($"Auth Properties - ExpiresUtc: {authProperties.ExpiresUtc}");
 
                         // Sign in
                         await HttpContext.SignInAsync(
@@ -123,6 +139,7 @@ namespace Project1.Controllers
                     {
                         TempData["Title"] = "Thất bại";
                         TempData["Content"] = "Email hoặc mật khẩu không đúng.";
+                        TempData["Type"] = "Error";
                         return RedirectToAction("Index", "Login");
                     }
                 }
@@ -130,6 +147,7 @@ namespace Project1.Controllers
                 {
                     TempData["Title"] = "Thất bại";
                     TempData["Content"] = "Email hoặc mật khẩu không đúng.";
+                    TempData["Type"] = "Error";
                     if (!ModelState.IsValid)
                     {
                         return View(user);
@@ -139,8 +157,6 @@ namespace Project1.Controllers
             }
             return RedirectToAction("Index", "Home");
         }
-
-        
 
         public async Task LoginGoogle()
         {
@@ -238,7 +254,6 @@ namespace Project1.Controllers
 
             return RedirectToAction("Index", "Menu");
         }
-
         public IActionResult LogoutUsual()
         {
             HttpContext.Session.Clear();
