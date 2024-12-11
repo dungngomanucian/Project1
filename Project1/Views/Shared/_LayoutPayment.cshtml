@@ -72,9 +72,9 @@
             transition: transform 0.3s ease-in-out;
         }
 
-            .status-step:hover {
-                transform: scale(1.1); /* Tạo hiệu ứng phóng to khi hover */
-            }
+        .status-step:hover {
+            transform: scale(1.1); /* Tạo hiệu ứng phóng to khi hover */
+        }
 
         .step-number {
             display: inline-block;
@@ -183,6 +183,12 @@
         .order-status {
             margin-top: 70px;
             margin-bottom: -60px;
+        }
+
+        @@media (max-width: 768px) {
+            .order-status{
+                display: none; /* Ẩn khối trạng thái đơn hàng */
+            }
         }
     </style>
     
