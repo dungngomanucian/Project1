@@ -61,10 +61,15 @@ namespace Project1.Areas.Admin.Controllers
                 db.TOrders.Update(order);
                 db.SaveChanges();
             }
-            
+
+            var orders = db.TOrders
+                              .AsNoTracking()
+                              .Where(x => x.StatusId == 3)
+                              .OrderBy(x => x.OrderId)
+                              .ToList();
 
             // Trả về view `ListUnAcceptOrder` cùng dữ liệu danh sách chưa xác nhận
-            return View();
+            return View("ListUnAcceptOrder", orders);
         }
 
         [Route("Delivering")]
