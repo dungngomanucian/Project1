@@ -23,6 +23,7 @@ builder.Services.AddAuthentication(options =>
     options.SlidingExpiration = true;
     options.Cookie.SecurePolicy = CookieSecurePolicy.SameAsRequest;
     options.ReturnUrlParameter = "returnUrl";
+    options.AccessDeniedPath = "/admin/homeadmin/accessdenied";
 })
 .AddGoogle(GoogleDefaults.AuthenticationScheme, options =>
 {
@@ -30,6 +31,11 @@ builder.Services.AddAuthentication(options =>
     options.ClientSecret = builder.Configuration.GetSection("GoogleKeys:ClientSecret").Value;
 });
 
+builder.Services.AddAuthorization(options =>
+{
+    options.AddPolicy("AdminOnly", policy =>
+        policy.RequireRole("1", "3")); // Chỉ các Roles có giá trị là 1 (Admin) hoặc 3 (Sub-admin) mới được truy cập
+});
 // Add services to the container.
 builder.Services.AddControllersWithViews();
 

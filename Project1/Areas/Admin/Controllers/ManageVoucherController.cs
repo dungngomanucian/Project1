@@ -18,6 +18,7 @@ using Mono.TextTemplating;
 
 namespace Project1.Areas.Admin.Controllers
 {
+    [Authorize(Policy = "AdminOnly")]
     [Area("admin")]
     [Route("admin")]
     [Route("admin/managevoucher")]

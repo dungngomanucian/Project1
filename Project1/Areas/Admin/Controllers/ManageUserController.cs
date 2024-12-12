@@ -19,6 +19,7 @@ using X.PagedList.Extensions;
 
 namespace Project1.Areas.Admin.Controllers
 {
+    [Authorize(Policy = "AdminOnly")]
     [Area("admin")]
     [Route("admin")]
     [Route("admin/manageuser")]
