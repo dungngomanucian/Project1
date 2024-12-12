@@ -17,33 +17,35 @@ using X.PagedList.Extensions;
 
 namespace Project1.Areas.Admin.Controllers
 {
-	
-	[Area("admin")]
-	[Route("admin")]
-	[Route("admin/homeadmin")]
-	public class HomeAdminController : Controller
-	{
+    [Authorize(Policy = "AdminOnly")]
+    [Area("admin")]
+    [Route("admin")]
+    [Route("admin/homeadmin")]
+    public class HomeAdminController : Controller
+    {
         private readonly IWebHostEnvironment _webHostEnvironment;
         public HomeAdminController(IWebHostEnvironment webHostEnvironment)
         {
             _webHostEnvironment = webHostEnvironment;
         }
 
-        PizzaOnlineContext db= new PizzaOnlineContext();
+        PizzaOnlineContext db = new PizzaOnlineContext();
         //từ đây trở xuống là các action phục vụ hiển thị dashboard
         [Route("")]
-		[Route("index")]
-		public IActionResult Index()
-		{
-           
+        [Route("index")]
+        public IActionResult Index()
+        {
             return View("Dashboard/Index");
-		}
+        }
         //kết thúc dashboard
-
-        //từ đây trở xuống là các action xử lý combo
-        //kết thúc các action xử lý combo
-
-        //từ đây trở xuống là các action xử lý user
-        //kết thúc các action xử lý user
+        [Route("accessdenied")]
+        public IActionResult AccessDenied(string returnUrl)
+        {
+            if (!string.IsNullOrEmpty(returnUrl) && !returnUrl.Contains("AccessDenied"))
+            {
+                return Redirect(returnUrl);
+            }
+            return View();
+        }
     }
 }
