@@ -22,7 +22,7 @@ namespace Project1.ViewModels
         public string? PhoneNumber { get; set; }
 
         [Required(ErrorMessage = "Mật khẩu không được để trống")]
-        [MinLength(4, ErrorMessage = "Mật khẩu phải có ít nhất 4 ký tự")]
+        [MinLength(6, ErrorMessage = "Mật khẩu phải có ít nhất 6 ký tự")]
         [DataType(DataType.Password)]
         [Display(Name = "Password")]
         public string? Password { get; set; }

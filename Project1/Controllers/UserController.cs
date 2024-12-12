@@ -80,6 +80,7 @@ namespace Project1.Controllers
                     Password = BCrypt.Net.BCrypt.HashPassword(model.Password),
                     Address = model.Address,
                     Point = 0,
+                    IsGoogleAccount = false,
                     Deleted = false
                 };
 
@@ -178,7 +179,7 @@ namespace Project1.Controllers
                         </div>
             
                         <div class='content'>
-                            <h2>Xin chào {user.Nickname},</h2>
+                            <h2>Xin chào {user.LastName} {user.FirstName},</h2>
                             <p>Chúng tôi nhận được yêu cầu đặt lại mật khẩu từ bạn.</p>
                 
                             <div class='password-box'>
