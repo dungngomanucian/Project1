@@ -48,6 +48,8 @@ namespace Project1.Areas.Admin.Controllers
         [HttpPost]
         public IActionResult AddAdmin(Email_Password_forAdmin viewmodel)
         {
+            var check_user = db.TUsers.Where(x => x.Email == viewmodel.Email).FirstOrDefault();
+            if (check_user!=null &&  (check_user.RoleId==1 || check_user.RoleId == 3)) { TempData["TrungEmail"]="Email đã được sử dụng cho 1 tài khoản admin"; return RedirectToAction("ManageAdmin",viewmodel); }
             int lastUserId = (int)db.TUsers.DefaultIfEmpty().Max(p => (int?)p.UserId ?? 0);
             string password = BCrypt.Net.BCrypt.HashPassword(viewmodel.Password);
             var admin_new_account = new TUser
