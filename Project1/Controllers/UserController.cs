@@ -174,7 +174,7 @@ namespace Project1.Controllers
                 <body>
                     <div class='email-container'>
                         <div class='header'>
-                             <img src='https://scontent.fhan14-3.fna.fbcdn.net/v/t39.30808-6/469167161_2056725571432618_6103467900661450282_n.jpg?stp=dst-jpg_p526x296_tt6&_nc_cat=103&ccb=1-7&_nc_sid=127cfc&_nc_ohc=yNfgwjCDDY8Q7kNvgHI7STq&_nc_zt=23&_nc_ht=scontent.fhan14-3.fna&_nc_gid=AnW82zGL2Gj5gtl8HqA8R3Y&oh=00_AYDxdj7957VgRhPP13LPaBKlQOAugAO-6ABOl72cbD0D0Q&oe=675E49AC' style='border-radius: 50%; width: 130px; height: 130px; object-fit: cover;' alt='Pizza Online Logo' class='logo'>
+                             <img src='https://scontent.fhan5-11.fna.fbcdn.net/v/t39.30808-6/469167161_2056725571432618_6103467900661450282_n.jpg?stp=dst-jpg_p526x296_tt6&_nc_cat=103&ccb=1-7&_nc_sid=127cfc&_nc_eui2=AeEBvVd9kr3vn8xYHw1wsiao-6CDmnBRdR_7oIOacFF1H1OvlxGgAJ4bCHJfG8SDG-YXgJeK3KBlLHDYQdFZdReo&_nc_ohc=NNz-vs4Q4fEQ7kNvgGI96Os&_nc_zt=23&_nc_ht=scontent.fhan5-11.fna&_nc_gid=AaVLUEkWylrSwLyOmzxJCmc&oh=00_AYAFUfBRH9__bBcI40dJj4CT5TlP6kKdmgIK9N3Iu6wdTA&oe=6761956C' style='border-radius: 50%; width: 130px; height: 130px; object-fit: cover;' alt='Pizza Online Logo' class='logo'>
                             <h1 style='color: #ff6b6b;'>Sixter's Pizza</h1>
                         </div>
             
